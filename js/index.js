@@ -10,7 +10,7 @@ function submit() {
     }
 
     if (parseInt(arrival.value.split(":")[0]) <= 5 || (parseInt(arrival.value.split(":")[0]) >= 10 && parseInt(arrival.value.split(":")[1]) >= 1)) {
-            console.log(parseInt(arrival.value.split(":")[1]));
+            //console.log(parseInt(arrival.value.split(":")[1]));
             window.alert("Sie können nur zwischen 6Uhr und 10Uhr anfangen zuarbeiten!")
             return;
     }
@@ -47,13 +47,13 @@ function countdown(pTime, pArrival) {
     const arrival = new Date("Jan 5, 2024 " + pArrival + ":00").getTime();
     const distance1 = countDownDate - arrival;
 
-    console.log("Distance1: " + distance1);
+    //console.log("Distance1: " + distance1);
     var hour = Math.floor((distance1 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     var minute = Math.floor((distance1 % (1000 * 60 * 60)) / (1000 * 60));
 
     var end = hour * 60 + minute;
 
-    console.log("Minuten: " + end);
+    //console.log("Minuten: " + end);
 
     var x = setInterval(function() {
 
@@ -63,7 +63,7 @@ function countdown(pTime, pArrival) {
         // Find the distance between now and the count down date
         var distance = countDownDate - now;
 
-        console.log("Distance: " + distance);
+        //console.log("Distance: " + distance);
 
         // Time calculations for days, hours, minutes and seconds
         var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) -1;
@@ -81,7 +81,7 @@ function countdown(pTime, pArrival) {
         var timeone = "01:23:00"; // time elapsed
         var pct = 100 - (100 * (hours * 60 + minutes) / end);
 
-        console.log(pct);
+        //console.log(pct);
         document.getElementById("progressbar").innerHTML = pct.toFixed(0) + "%";
         document.getElementById("progressbar").style = "width: " + pct.toFixed(0) + "%";
     }, 1000);

@@ -1,0 +1,47 @@
+body {
+    font-family: verdana;
+    background-color: #339933;
+    color: White;
+}
+
+h1 {
+    text-align: center;
+}
+
+button {
+    background-color: #339933;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #5bde5b;
+}
+
+input[type=number] {
+    width: 80%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    font-size: 15px;
+    border-radius: 8px;
+}
+
+.converter {
+    font-family: verdana;
+    font-size: 15px;
+    display: flex;
+    alignment: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: #73AD21;
+    margin: auto;
+    width: 18%;
+    padding: 10px;
+}

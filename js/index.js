@@ -10,7 +10,7 @@ function submit() {
     }
 
     if (parseInt(arrival.value.split(":")[0]) <= 5 || (parseInt(arrival.value.split(":")[0]) >= 10 && parseInt(arrival.value.split(":")[1]) >= 1)) {
-            //console.log(parseInt(arrival.value.split(":")[1]));
+            console.log(parseInt(arrival.value.split(":")[1]));
             window.alert("Sie können nur zwischen 6Uhr und 10Uhr anfangen zuarbeiten!")
             return;
     }
@@ -26,7 +26,7 @@ function submit() {
     document.getElementById("endtime").value = quitTime;
 
     if (parseInt(quitTime.split(":")[0]) >= 20) {
-        window.alert("Sie können nur bis ab 20 Uhr arbeiten!")
+        window.alert("Sie können nur bis ab 20 Uhr arbeiten!");
         return;
     }
 
@@ -35,7 +35,7 @@ function submit() {
 }
 
 function addMinutes(time, minsToAdd) {
-    function D(J){ return (J<10? '0':'') + J;};
+    function D(J){ return (J<10? '0':'') + J;}
     var piece = time.split(':');
     var mins = piece[0]*60 + +piece[1] + +minsToAdd;
 
@@ -60,7 +60,7 @@ function countdown(pTime, pArrival) {
         // Get today's date and time
         var now = new Date().getTime();
 
-        // Find the distance between now and the count down date
+        // Find the distance between now and the countdown date
         var distance = countDownDate - now;
 
         //console.log("Distance: " + distance);
@@ -72,13 +72,12 @@ function countdown(pTime, pArrival) {
 
         document.getElementById("countdown").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
 
-        // If the count down is finished, write some text
+        // If the countdown is finished, write some text
         if ((hours * 60 + minutes) < 0) {
             clearInterval(x);
             document.getElementById("countdown").innerHTML = "FEIERABEND!";
         }
 
-        var timeone = "01:23:00"; // time elapsed
         var pct = 100 - (100 * (hours * 60 + minutes) / end);
 
         //console.log(pct);
@@ -87,15 +86,6 @@ function countdown(pTime, pArrival) {
     }, 1000);
 }
 
-function totalSeconds(time){
-    var parts = time.split(':');
-    return parts[0] * 3600 + parts[1] * 60 + parts[2];
-}
-
 function sliderChange() {
     document.getElementById("pauseValue").value = document.getElementById("pausetime").value;
-}
-
-function inputChange() {
-    document.getElementById("pausetime").value = document.getElementById("pauseValue").value;
 }

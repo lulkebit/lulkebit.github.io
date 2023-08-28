@@ -76,6 +76,7 @@ function countdown(pTime, pArrival) {
         if ((hours * 60 + minutes) < 0) {
             clearInterval(x);
             document.getElementById("countdown").innerHTML = "FEIERABEND!";
+            location.replace("./firework.html");
         }
 
         var pct = 100 - (100 * (hours * 60 + minutes) / end);

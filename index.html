@@ -38,8 +38,8 @@
         <div class="row justify-content-center">
             <div class="col-sm-4 p-2">
                 <label for=pausetime class="form-label">Pause</label>
-                <input class="form-range" id=pausetime name=points max=45 min=30 step=15 type=range value=30 onchange="sliderChange()">
-                <input id="pauseValue" value="30" type="number" disabled>
+                <input class="form-range" id=pausetime name=points max=60 min=0 step=1 type=range value=30 onchange="sliderChange()">
+                <input id="pauseValue" value="30" type="number" oninput="inputChange()">
             </div>
         </div>
         <div class="row justify-content-center">

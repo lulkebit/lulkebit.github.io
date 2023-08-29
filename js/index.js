@@ -90,3 +90,7 @@ function countdown(pTime, pArrival) {
 function sliderChange() {
     document.getElementById("pauseValue").value = document.getElementById("pausetime").value;
 }
+
+function inputChange() {
+    document.getElementById("pausetime").value = document.getElementById("pauseValue").value;
+}

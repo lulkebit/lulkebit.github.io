@@ -53,8 +53,8 @@ function addMinutes(time, minsToAdd) {
 }
 
 function countdown(pTime, pArrival) {
-    const countDownDate = new Date("Jan 5, 2024 " + pTime + ":00").getTime();
-    const arrival = new Date("Jan 5, 2024 " + pArrival + ":00").getTime();
+    const countDownDate = new Date("Jan 5, 2100 " + pTime + ":00").getTime();
+    const arrival = new Date("Jan 5, 2100 " + pArrival + ":00").getTime();
     const distance1 = countDownDate - arrival;
 
     //console.log("Distance1: " + distance1);

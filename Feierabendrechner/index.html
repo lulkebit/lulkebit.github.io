@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feierabendrechner</title>
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/OOjs_UI_icon_clock-progressive.svg/2048px-OOjs_UI_icon_clock-progressive.svg.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/index.js"></script>
+</head>
+<body>
+<h1 class="container-fluid p-5 bg-dark bg-gradient text-white text-center">Feierabendrechner</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-sm-4 p-2">
+            <label for=arrival>Ankunftszeit: </label>
+            <input type="time" id=arrival name=arrival>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-4 p-2">
+            <label for=overtime>Geplante Überstunden: </label>
+            <input type="time" id="overtime" name=overtime>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-4 p-2">
+            <label for="endtime">Feierabend: </label>
+            <input id="endtime" placeholder="--:--" disabled>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-4 p-2">
+            <label for="worktime">Arbeitszeit: </label>
+            <input type="time" id="worktime" value="07:48">
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-4 p-2">
+            <label for=pausetime class="form-label">Pause</label>
+            <input class="form-range" id=pausetime name=points max=60 min=0 step=1 type=range value=30 onchange="sliderChange()">
+            <input id="pauseValue" value="30" type="number" oninput="inputChange()">
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-4 p-2">
+            <button type="button" class="btn btn-dark" onclick="submit()">Berechnen</button>
+        </div>
+    </div>
+    <br>
+    <div class="progress" style="height: 20px;">
+        <div id="progressbar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
+    </div>
+    <br>
+    <h1 class="text-center" id="countdown">00:00:00</h1>
+    <a class="row justify-content-center" href="https://forms.gle/E88CRTxbQQAm5KWD8">Suggest a feature</a>
+    <a class="row justify-content-center" href="https://github.com/lulkebit/lulkebit.github.io/commits/main">Changelog</a>
+</div>
+</body>
+</html>

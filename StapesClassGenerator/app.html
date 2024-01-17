@@ -9,33 +9,51 @@
     <body>
         <h1 class="container-fluid p-5 bg-danger bg-gradient text-white text-center">Stapes Klassengenerator</h1>
         <div class="container mt-5">
+
             <div class="row justify-content-center">
                 <div class="col-sm-1 p-2">
                     <button class="btn btn-danger btn-lg" id="generateButton" name="generateButton" onclick="generate()">Generate</button>
                 </div>
             </div>
+
             <hr class="hr hr-blurry"/>
+
             <div class="row justify-content-center">
                 <h2>Klassenname:</h2>
                 <div class="col-sm-4 p-2">
                     <input type="text" id="className" name="className" placeholder="Klassenname">
                 </div>
             </div>
+
             <hr class="hr hr-blurry"/>
+
             <h2>Parameter:</h2>
-            <ul id="list" style="list-style:none; padding-left: 0%"></ul>
+            <ul id="parameterList" style="list-style:none; padding-left: 0%"></ul>
             <div class="row justify-content-center">
                 <div class="col-sm-4 p-2">
-                    <button class="btn btn-danger" id="duplicateParameter" name="duplicateParameter" onclick="add()">Add</button>
+                    <button class="btn btn-danger" id="addParameterButton" name="addParameterButton" onclick="addParameter()">Add</button>
                 </div>
             </div>
+
             <hr class="hr hr-blurry"/>
+
+            <h2>Methoden:</h2>
+            <ul id="methodsList" style="list-style:none; padding-left: 0%"></ul>
+            <div class="row justify-content-center">
+                <div class="col-sm-4 p-2">
+                    <button class="btn btn-danger" id="addMethodButton" name="addMethodButton" onclick="addMethod()">Add</button>
+                </div>
+            </div>
+
+            <hr class="hr hr-blurry"/>
+
             <div id="outputDiv" class="row justify-content-center" hidden>
                 <div class="col-sm-8 p-2">
                     <textarea id="output" name="output" rows="20" cols="150" disabled></textarea>
                     <button id="copyText" name="copyText" onclick="copy()">Kopieren</button>
                 </div>
             </div>
+
         </div>
         <script src="js/app.js"></script>
     </body>

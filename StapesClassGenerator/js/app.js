@@ -4,6 +4,7 @@ const outputDiv = document.getElementById("outputDiv");
 const outputTextArea = document.getElementById("output");
 const className = document.getElementById("className");
 const copyButton = document.getElementById("copyText");
+const constructorCheckbox = document.getElementById("constructorCheckbox");
 
 function addParameter() {
     let item = document.createElement("li");
@@ -115,9 +116,26 @@ function generate() {
         return;
     }
 
+    let constructor = "";
     let parameter = "";
     let getterAndSetter = "";
     let methods = "";
+    let parameterList = "";
+    let parameterConstructor = "";
+
+    for (let i = 0; i < document.getElementsByName("parameterName").length; i++) {
+        parameterList += document.getElementsByName("parameterName").item(i).value + ", ";
+        parameterConstructor += "                this." + document.getElementsByName("parameterName").item(i).value + " = " + document.getElementsByName("parameterName").item(i).value + ";\n";
+    }
+
+    parameterList = parameterList.slice(0, -1);
+    parameterList = parameterList.slice(0, -1);
+
+    if (constructorCheckbox.checked === true) {
+        constructor += "            constructor : function(" + parameterList + ") {\n" +
+            parameterConstructor +
+            "            },\n\n"
+    }
 
     for (let j = 0; j < document.getElementsByName("parameterName").length; j++) {
         if(document.getElementsByName("parameterName").item(j).value === "") {
@@ -158,6 +176,7 @@ function generate() {
         "        'use strict';\n" +
         "        var " + className.value + " = Stapes.subclass(/** @lends " + className.value + ".prototype */{\n" +
         parameter + "\n" +
+        constructor +
         methods +
         getterAndSetter;
 

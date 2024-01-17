@@ -1,10 +1,11 @@
-const parameterList = document.getElementById("list");
+const parameterList = document.getElementById("parameterList");
+const methodsList = document.getElementById("methodsList");
 const outputDiv = document.getElementById("outputDiv");
 const outputTextArea = document.getElementById("output");
 const className = document.getElementById("className");
 const copyButton = document.getElementById("copyText");
 
-function add() {
+function addParameter() {
     let item = document.createElement("li");
     let divOne = document.createElement("div");
     divOne.className = "row justify-content-center";
@@ -80,6 +81,34 @@ function add() {
     parameterList.appendChild(item);
 }
 
+function addMethod() {
+    let item = document.createElement("li");
+    let divOne = document.createElement("div");
+    divOne.className = "row justify-content-center";
+
+    let divTwo = document.createElement("div");
+    divTwo.className = "col-sm-4 p-2";
+
+    let inputField = document.createElement("input");
+    inputField.type = "text";
+    inputField.id = "methodName";
+    inputField.name = "methodName";
+    inputField.placeholder = "Methodenname";
+
+    let deleteButton = document.createElement("button");
+    deleteButton.className = "btn btn-danger";
+    deleteButton.innerHTML = "Remove";
+    deleteButton.addEventListener("click", function () {
+        item.remove();
+    });
+
+    divTwo.appendChild(inputField);
+    divTwo.appendChild(deleteButton);
+    divOne.appendChild(divTwo);
+    item.appendChild(divOne);
+    methodsList.appendChild(item);
+}
+
 function generate() {
     if (className.value === "") {
         window.alert("Bitte geben Sie einen gültigen Klassennamen an!");
@@ -88,6 +117,7 @@ function generate() {
 
     let parameter = "";
     let getterAndSetter = "";
+    let methods = "";
 
     for (let j = 0; j < document.getElementsByName("parameterName").length; j++) {
         if(document.getElementsByName("parameterName").item(j).value === "") {
@@ -112,11 +142,23 @@ function generate() {
         }
     }
 
+    for (let k = 0; k < document.getElementsByName("methodName").length; k++) {
+        if(document.getElementsByName("methodName").item(k).value === "") {
+            window.alert("Geben Sie einen gültigen Methodennamen an!");
+            return;
+        }
+
+        methods += "            " + document.getElementsByName("methodName").item(k).value + " : function() {\n" +
+            "                \n" +
+            "            },\n"
+    }
+
     let stringPartOne = "define(['tao/lib/stapes'],\n" +
         "    function(Stapes)\n" +
         "        'use strict';\n" +
         "        var " + className.value + " = Stapes.subclass(/** @lends " + className.value + ".prototype */{\n" +
         parameter + "\n" +
+        methods +
         getterAndSetter;
 
     stringPartOne = stringPartOne.slice(0, -1);

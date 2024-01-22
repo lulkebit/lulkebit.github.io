@@ -21,8 +21,9 @@ function addParameter() {
     inputField.placeholder = "Parametername";
 
     let deleteButton = document.createElement("button");
-    deleteButton.className = "btn btn-danger";
-    deleteButton.innerHTML = "Remove";
+    deleteButton.className = "btn";
+    deleteButton.innerHTML = "Entfernen";
+    deleteButton.style = "background-color: rgb(255, 0, 0); color:white;";
     deleteButton.addEventListener("click", function () {
         item.remove();
     });
@@ -39,13 +40,13 @@ function addParameter() {
     let getterCheckboxInput = document.createElement("input");
     getterCheckboxInput.className = "form-check-input";
     getterCheckboxInput.type = "checkbox";
-    getterCheckboxInput.id = "flexSwitchCheckChecked";
+    getterCheckboxInput.id = "getterCheckbox";
     getterCheckboxInput.name = "generateGetter";
     getterCheckboxInput.checked = true;
 
     let getterCheckboxLabel = document.createElement("label");
     getterCheckboxLabel.className = "form-check-label";
-    getterCheckboxLabel.htmlFor = "flexSwitchCheckChecked";
+    getterCheckboxLabel.htmlFor = "getterCheckbox";
     getterCheckboxLabel.innerHTML = "getter?";
 
     let setterCheckboxDiv = document.createElement("div");
@@ -54,14 +55,29 @@ function addParameter() {
     let setterCheckboxInput = document.createElement("input");
     setterCheckboxInput.className = "form-check-input";
     setterCheckboxInput.type = "checkbox";
-    setterCheckboxInput.id = "flexSwitchCheckChecked";
+    setterCheckboxInput.id = "setterCheckbox";
     setterCheckboxInput.name = "generateSetter";
     setterCheckboxInput.checked = true;
 
     let setterCheckboxLabel = document.createElement("label");
     setterCheckboxLabel.className = "form-check-label";
-    setterCheckboxLabel.htmlFor = "flexSwitchCheckChecked";
+    setterCheckboxLabel.htmlFor = "setterCheckbox";
     setterCheckboxLabel.innerHTML = "setter?";
+
+    let arrayCheckBoxDiv = document.createElement("div");
+    arrayCheckBoxDiv.className = "form-check form-switch";
+
+    let arrayCheckBoxInput = document.createElement("input");
+    arrayCheckBoxInput.className = "form-check-input";
+    arrayCheckBoxInput.type = "checkbox";
+    arrayCheckBoxInput.id = "arrayCheckBox";
+    arrayCheckBoxInput.name = "arrayCheckBox";
+    arrayCheckBoxInput.checked = false;
+
+    let arrayCheckboxLabel = document.createElement("label");
+    arrayCheckboxLabel.className = "form-check-label";
+    arrayCheckboxLabel.htmlFor = "arrayCheckBox";
+    arrayCheckboxLabel.innerHTML = "Array";
 
     divTwo.appendChild(inputField);
     divTwo.appendChild(deleteButton);
@@ -73,8 +89,12 @@ function addParameter() {
     setterCheckboxDiv.appendChild(setterCheckboxInput);
     setterCheckboxDiv.appendChild(setterCheckboxLabel);
 
+    arrayCheckBoxDiv.appendChild(arrayCheckBoxInput);
+    arrayCheckBoxDiv.appendChild(arrayCheckboxLabel);
+
     divFour.appendChild(getterCheckboxDiv);
     divFour.appendChild(setterCheckboxDiv);
+    divFour.appendChild(arrayCheckBoxDiv);
     divThree.appendChild(divFour);
 
     item.appendChild(divOne);
@@ -97,8 +117,9 @@ function addMethod() {
     inputField.placeholder = "Methodenname";
 
     let deleteButton = document.createElement("button");
-    deleteButton.className = "btn btn-danger";
-    deleteButton.innerHTML = "Remove";
+    deleteButton.className = "btn";
+    deleteButton.innerHTML = "Entfernen";
+    deleteButton.style = "background-color: rgb(255, 0, 0); color:white;";
     deleteButton.addEventListener("click", function () {
         item.remove();
     });
@@ -124,8 +145,12 @@ function generate() {
     let parameterConstructor = "";
 
     for (let i = 0; i < document.getElementsByName("parameterName").length; i++) {
-        parameterList += document.getElementsByName("parameterName").item(i).value + ", ";
-        parameterConstructor += "                this." + document.getElementsByName("parameterName").item(i).value + " = " + document.getElementsByName("parameterName").item(i).value + ";\n";
+        if (!document.getElementsByName("arrayCheckBox").item(i).checked) {
+            parameterList += document.getElementsByName("parameterName").item(i).value + ", ";
+            parameterConstructor += "                this." + document.getElementsByName("parameterName").item(i).value + " = " + document.getElementsByName("parameterName").item(i).value + ";\n";
+        } else {
+            parameterConstructor += "                this." + document.getElementsByName("parameterName").item(i).value + " = [];\n";
+        }
     }
 
     parameterList = parameterList.slice(0, -1);
@@ -148,12 +173,12 @@ function generate() {
         let str = document.getElementsByName("parameterName").item(j).value;
         let strUpperCase = str.charAt(0).toUpperCase() + str.slice(1);
 
-        if (document.getElementsByName("generateGetter").item(j).checked === true) {
+        if (document.getElementsByName("generateGetter").item(j).checked) {
             getterAndSetter += "            get" + strUpperCase + ": function() {\n" +
                 "                return this." + str + ";\n" +
                 "            },\n";
         }
-        if (document.getElementsByName("generateSetter").item(j).checked === true) {
+        if (document.getElementsByName("generateSetter").item(j).checked) {
             getterAndSetter += "            set" + strUpperCase + ": function(" + str + ") {\n" +
                 "                this." + str + " = " + str + ";\n" +
                 "            },\n";

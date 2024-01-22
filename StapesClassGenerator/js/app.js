@@ -220,3 +220,16 @@ function copy() {
     navigator.clipboard.writeText(outputTextArea.value).then(r => copyButton.innerHTML = "Erledigt!");
     setTimeout(() => { copyButton.innerHTML = "Kopieren"; }, 1000);
 }
+
+function download() {
+    let element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(outputTextArea.value));
+    element.setAttribute('download', "output");
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}

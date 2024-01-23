@@ -1,10 +1,13 @@
+const className = document.getElementById("className");
+const constructorCheckbox = document.getElementById("constructorCheckbox");
+
 const parameterList = document.getElementById("parameterList");
 const methodsList = document.getElementById("methodsList");
+
 const outputDiv = document.getElementById("outputDiv");
 const outputTextArea = document.getElementById("output");
-const className = document.getElementById("className");
 const copyButton = document.getElementById("copyText");
-const constructorCheckbox = document.getElementById("constructorCheckbox");
+
 
 function addParameter() {
     let item = document.createElement("li");
@@ -16,6 +19,7 @@ function addParameter() {
 
     let inputField = document.createElement("input");
     inputField.type = "text";
+    inputField.style = "padding-right: 15px;";
     inputField.id = "parameterName";
     inputField.name = "parameterName";
     inputField.placeholder = "Parametername";
@@ -35,7 +39,7 @@ function addParameter() {
     divFour.className = "col-sm-4 p-2";
 
     let getterCheckboxDiv = document.createElement("div");
-    getterCheckboxDiv.className = "form-check form-switch";
+    getterCheckboxDiv.className = "form-check form-switch form-check-inline";
 
     let getterCheckboxInput = document.createElement("input");
     getterCheckboxInput.className = "form-check-input";
@@ -50,7 +54,7 @@ function addParameter() {
     getterCheckboxLabel.innerHTML = "getter?";
 
     let setterCheckboxDiv = document.createElement("div");
-    setterCheckboxDiv.className = "form-check form-switch";
+    setterCheckboxDiv.className = "form-check form-switch form-check-inline";
 
     let setterCheckboxInput = document.createElement("input");
     setterCheckboxInput.className = "form-check-input";
@@ -65,7 +69,7 @@ function addParameter() {
     setterCheckboxLabel.innerHTML = "setter?";
 
     let arrayCheckBoxDiv = document.createElement("div");
-    arrayCheckBoxDiv.className = "form-check form-switch";
+    arrayCheckBoxDiv.className = "form-check form-switch form-check-inline";
 
     let arrayCheckBoxInput = document.createElement("input");
     arrayCheckBoxInput.className = "form-check-input";
@@ -80,7 +84,6 @@ function addParameter() {
     arrayCheckboxLabel.innerHTML = "Array";
 
     divTwo.appendChild(inputField);
-    divTwo.appendChild(deleteButton);
     divOne.appendChild(divTwo);
 
     getterCheckboxDiv.appendChild(getterCheckboxInput);
@@ -95,6 +98,8 @@ function addParameter() {
     divFour.appendChild(getterCheckboxDiv);
     divFour.appendChild(setterCheckboxDiv);
     divFour.appendChild(arrayCheckBoxDiv);
+    divFour.appendChild(deleteButton);
+    divFour.appendChild(document.createElement("hr"));
     divThree.appendChild(divFour);
 
     item.appendChild(divOne);
@@ -126,6 +131,7 @@ function addMethod() {
 
     divTwo.appendChild(inputField);
     divTwo.appendChild(deleteButton);
+    divTwo.appendChild(document.createElement("hr"));
     divOne.appendChild(divTwo);
     item.appendChild(divOne);
     methodsList.appendChild(item);

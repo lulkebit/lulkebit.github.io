@@ -10,16 +10,15 @@ const copyButton = document.getElementById("copyText");
 
 
 function addParameter() {
-    let item = document.createElement("li");
-    let divOne = document.createElement("div");
-    divOne.className = "row justify-content-center";
+    let listEntry = document.createElement("li");
+    let rowInputDiv = document.createElement("div");
+    rowInputDiv.className = "row justify-content-center";
 
-    let divTwo = document.createElement("div");
-    divTwo.className = "col-sm-4 p-2";
+    let colInputDiv = document.createElement("div");
+    colInputDiv.className = "col-sm-4 p-2";
 
     let inputField = document.createElement("input");
     inputField.type = "text";
-    inputField.style = "padding-right: 15px;";
     inputField.id = "parameterName";
     inputField.name = "parameterName";
     inputField.placeholder = "Parametername";
@@ -29,14 +28,14 @@ function addParameter() {
     deleteButton.innerHTML = "Entfernen";
     deleteButton.style = "background-color: rgb(255, 0, 0); color:white;";
     deleteButton.addEventListener("click", function () {
-        item.remove();
+        listEntry.remove();
     });
 
-    let divThree = document.createElement("div");
-    divThree.className = "row justify-content-center";
+    let rowCheckBoxDiv = document.createElement("div");
+    rowCheckBoxDiv.className = "row justify-content-center";
 
-    let divFour = document.createElement("div");
-    divFour.className = "col-sm-4 p-2";
+    let colCheckBoxDiv = document.createElement("div");
+    colCheckBoxDiv.className = "col-sm-4 p-2";
 
     let getterCheckboxDiv = document.createElement("div");
     getterCheckboxDiv.className = "form-check form-switch form-check-inline";
@@ -83,8 +82,8 @@ function addParameter() {
     arrayCheckboxLabel.htmlFor = "arrayCheckBox";
     arrayCheckboxLabel.innerHTML = "Array";
 
-    divTwo.appendChild(inputField);
-    divOne.appendChild(divTwo);
+    colInputDiv.appendChild(inputField);
+    rowInputDiv.appendChild(colInputDiv);
 
     getterCheckboxDiv.appendChild(getterCheckboxInput);
     getterCheckboxDiv.appendChild(getterCheckboxLabel);
@@ -95,25 +94,26 @@ function addParameter() {
     arrayCheckBoxDiv.appendChild(arrayCheckBoxInput);
     arrayCheckBoxDiv.appendChild(arrayCheckboxLabel);
 
-    divFour.appendChild(getterCheckboxDiv);
-    divFour.appendChild(setterCheckboxDiv);
-    divFour.appendChild(arrayCheckBoxDiv);
-    divFour.appendChild(deleteButton);
-    divFour.appendChild(document.createElement("hr"));
-    divThree.appendChild(divFour);
+    colCheckBoxDiv.appendChild(getterCheckboxDiv);
+    colCheckBoxDiv.appendChild(setterCheckboxDiv);
+    colCheckBoxDiv.appendChild(arrayCheckBoxDiv);
+    colCheckBoxDiv.appendChild(deleteButton);
+    colCheckBoxDiv.appendChild(document.createElement("hr"));
+    rowCheckBoxDiv.appendChild(colCheckBoxDiv);
 
-    item.appendChild(divOne);
-    item.appendChild(divThree);
-    parameterList.appendChild(item);
+    listEntry.appendChild(rowInputDiv);
+    listEntry.appendChild(rowCheckBoxDiv);
+
+    parameterList.appendChild(listEntry);
 }
 
 function addMethod() {
-    let item = document.createElement("li");
-    let divOne = document.createElement("div");
-    divOne.className = "row justify-content-center";
+    let listEntry = document.createElement("li");
+    let rowDiv = document.createElement("div");
+    rowDiv.className = "row justify-content-center";
 
-    let divTwo = document.createElement("div");
-    divTwo.className = "col-sm-4 p-2";
+    let colDiv = document.createElement("div");
+    colDiv.className = "col-sm-4 p-2";
 
     let inputField = document.createElement("input");
     inputField.type = "text";
@@ -126,15 +126,18 @@ function addMethod() {
     deleteButton.innerHTML = "Entfernen";
     deleteButton.style = "background-color: rgb(255, 0, 0); color:white;";
     deleteButton.addEventListener("click", function () {
-        item.remove();
+        listEntry.remove();
     });
 
-    divTwo.appendChild(inputField);
-    divTwo.appendChild(deleteButton);
-    divTwo.appendChild(document.createElement("hr"));
-    divOne.appendChild(divTwo);
-    item.appendChild(divOne);
-    methodsList.appendChild(item);
+    colDiv.appendChild(inputField);
+    colDiv.appendChild(deleteButton);
+    colDiv.appendChild(document.createElement("hr"));
+
+    rowDiv.appendChild(colDiv);
+
+    listEntry.appendChild(rowDiv);
+
+    methodsList.appendChild(listEntry);
 }
 
 function generate() {

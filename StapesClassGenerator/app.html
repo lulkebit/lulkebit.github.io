@@ -11,31 +11,36 @@
         <h1 class="container-fluid p-5 text-white text-center" style="background-color: rgb(255, 0, 0);">Stapes Klassengenerator</h1>
         <div class="container mt-5">
 
-            <div class="row justify-content-center">
-                <button class="btn btn-lg" id="generateButton" name="generateButton" onclick="generate()" style="background-color: rgb(255, 0, 0); color:white;">Generieren</button>
-            </div>
+                <div class="row justify-content-center">
+                    <button class="btn btn-lg" id="generateButton" name="generateButton" onclick="generate()" style="background-color: rgb(255, 0, 0); color:white;">Generieren</button>
+                </div>
 
-            <hr class="hr hr-blurry"/>
+                <hr class="hr hr-blurry"/>
 
-            <div class="row">
-                <div class="col-md-5">
-                    <h2>Klassenname:</h2>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="constructorCheckbox" checked>
-                        <label class="form-check-label" for="constructorCheckbox">Konstruktor</label>
+                <div class="row justify-content-center">
+                    <div class="col-md-3">  <!-- https://getbootstrap.com/docs/5.0/forms/validation/ -->
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Klassenname</span>
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="className" name="className" placeholder="Username" required>
+                                <label for="className">Bsp.: 'myClass'</label>
+                            </div>
+                        </div>
+
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="constructorCheckbox" checked>
+                            <label class="form-check-label" for="constructorCheckbox">Konstruktor</label>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-5">
-                    <input type="text" id="className" name="className" placeholder="Klassenname">
-                </div>
-            </div>
 
             <hr class="hr hr-blurry"/>
 
             <div class="row">
                 <div class="col-md-1">
                     <h2>Parameter:</h2>
-                    <button class="btn" style="background-color: rgb(255, 0, 0); color:white;" id="addParameterButton" name="addParameterButton" onclick="addParameter()">Hinzufügen</button>
+                    <button class="btn" style="background-color: rgb(255, 0, 0); color:white;" id="addParameterButton" name="addParameterButton" onclick="addParameterInput()">Hinzufügen</button>
                 </div>
                 <div class="col-md-11">
                     <ul id="parameterList" style="list-style:none; padding-left: 0%"></ul>
@@ -47,7 +52,7 @@
             <div class="row">
                 <div class="col-md-1">
                     <h2>Methoden:</h2>
-                    <button class="btn" style="background-color: rgb(255, 0, 0); color:white;" id="addMethodButton" name="addMethodButton" onclick="addMethod()">Hinzufügen</button>
+                    <button class="btn" style="background-color: rgb(255, 0, 0); color:white;" id="addMethodButton" name="addMethodButton" onclick="createMethodInput()">Hinzufügen</button>
                 </div>
                 <div class="col-md-11">
                     <ul id="methodsList" style="list-style:none; padding-left: 0%"></ul>

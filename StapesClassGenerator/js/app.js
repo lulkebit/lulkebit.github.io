@@ -1,5 +1,4 @@
 const className = document.getElementById('className');
-const constructorCheckbox = document.getElementById('constructorCheckbox');
 
 const parameterList = document.getElementById('parameterList');
 const methodsList = document.getElementById('methodsList');
@@ -155,20 +154,19 @@ function generate() {
     let parameter = '';
     let getterAndSetter = '';
     let methods = '';
-    let parameterList = '';
     let parameterConstructor = '';
+
+    let generateContructor = false;
 
     for (let i = 0; i < document.getElementsByName('parameterName').length; i++) {
         if (document.getElementsByName('arrayCheckBox').item(i).checked) {
             parameterConstructor += '\t\t\t\tthis.' + document.getElementsByName('parameterName').item(i).value + ' = [];\n';
+            generateContructor = true;
         }
     }
 
-    parameterList = parameterList.slice(0, -1);
-    parameterList = parameterList.slice(0, -1);
-
-    if (constructorCheckbox.checked === true) {
-        constructor += '\t\t\tconstructor : function(' + parameterList + ') {\n' +
+    if (generateContructor) {
+        constructor += '\t\t\tconstructor : function() {\n' +
             parameterConstructor +
             '\t\t\t},\n\n'
     }

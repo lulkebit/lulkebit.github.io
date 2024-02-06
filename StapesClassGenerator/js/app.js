@@ -233,7 +233,7 @@ function copy() {
 function download() {
     let element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(outputTextArea.value));
-    element.setAttribute('download', 'output');
+    element.setAttribute('download', className.value + '.js');
 
     element.style.display = 'none';
     document.body.appendChild(element);

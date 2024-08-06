@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TimeInput = ({ label, value, enabled = true }) => {
+const TimeInput = ({ label, value, onChange, enabled = true }) => {
     return (
         <div className='flex items-center mb-4'>
             <label
@@ -14,6 +14,7 @@ const TimeInput = ({ label, value, enabled = true }) => {
                     type='time'
                     id={label.toLowerCase().replace(' ', '-')}
                     value={value}
+                    onChange={onChange}
                     disabled={!enabled}
                     className={`
             w-30 px-3 py-2 

@@ -1,11 +1,12 @@
 import './App.css';
+import ComponentContainer from './components/ComponentContainer';
+import Header from './components/Header';
 
 function App() {
     return (
         <div className='App'>
-            <header className='App-header bg-blue-500 text-white p-4'>
-                <h1 className='text-2xl'>Welcome to Tailwind CSS</h1>
-            </header>
+            <Header />
+            <ComponentContainer></ComponentContainer>
         </div>
     );
 }

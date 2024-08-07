@@ -1,9 +1,12 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
+
 import Header from './components/Header';
 import ComponentContainer from './components/ComponentContainer';
 import TimeInput from './components/TimeInput';
 import Slider from './components/Slider';
+import ProgressBar from './components/Progressbar';
+import ShiftOverAnimation from './components/ShiftOverAnimation';
 
 function App() {
     const getCurrentTime = () => {
@@ -19,6 +22,8 @@ function App() {
     const [workTime, setWorkTime] = useState('07:48');
     const [remainingTime, setRemainingTime] = useState('');
     const [endTime, setEndTime] = useState('');
+    const [progress, setProgress] = useState(0);
+    const [isShiftOver, setIsShiftOver] = useState(false);
 
     const calculateTimes = () => {
         const now = new Date();
@@ -41,8 +46,14 @@ function App() {
         if (endDate <= now) {
             setRemainingTime('00:00:00');
             setEndTime(getCurrentTime());
+            setProgress(100);
+            setIsShiftOver(true); // Set shift over state
             return;
         }
+
+        const totalDuration = endDate - startDate;
+        const elapsed = now - startDate;
+        const newProgress = Math.min(100, (elapsed / totalDuration) * 100);
 
         const diff = endDate - now;
         const hours = Math.floor(diff / 3600000);
@@ -61,50 +72,64 @@ function App() {
                 endDate.getMinutes()
             ).padStart(2, '0')}`
         );
+
+        setProgress(newProgress);
     };
 
     useEffect(() => {
-        const interval = setInterval(calculateTimes, 1000);
+        const interval = setInterval(calculateTimes, 10);
         return () => clearInterval(interval);
     }, [startTime, plannedOvertime, workTime, sliderValue]);
 
     return (
-        <div>
-            <Header />
-            <ComponentContainer>
-                <TimeInput
-                    label='Angefangen'
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    enabled={true}
-                />
-                <TimeInput
-                    label='Geplante Überstunden'
-                    value={plannedOvertime}
-                    onChange={(e) => setPlannedOvertime(e.target.value)}
-                    enabled={true}
-                />
-                <TimeInput
-                    label='Arbeitszeit'
-                    value={workTime}
-                    onChange={(e) => setWorkTime(e.target.value)}
-                    enabled={true}
-                />
-                <Slider
-                    label='Pause'
-                    value={sliderValue}
-                    onChange={(e) => setSliderValue(Number(e.target.value))}
-                />
-                <TimeInput
-                    label='Feierabend'
-                    value={endTime}
-                    onChange={() => {}}
-                    enabled={false}
-                />
-            </ComponentContainer>
-            <div className='text-4xl font-bold mt-8'>
-                Feierabend in: {remainingTime}
-            </div>
+        <div className='flex flex-col min-h-screen'>
+            {isShiftOver ? (
+                <ShiftOverAnimation />
+            ) : (
+                <>
+                    <Header remainingTime={remainingTime} />
+                    <div className='flex-grow flex flex-col items-center justify-center'>
+                        <ComponentContainer>
+                            <TimeInput
+                                label='Angefangen'
+                                value={startTime}
+                                onChange={(e) => setStartTime(e.target.value)}
+                                enabled={true}
+                            />
+                            <TimeInput
+                                label='Geplante Überstunden'
+                                value={plannedOvertime}
+                                onChange={(e) =>
+                                    setPlannedOvertime(e.target.value)
+                                }
+                                enabled={true}
+                            />
+                            <TimeInput
+                                label='Arbeitszeit'
+                                value={workTime}
+                                onChange={(e) => setWorkTime(e.target.value)}
+                                enabled={true}
+                            />
+                            <Slider
+                                label='Pause'
+                                value={sliderValue}
+                                onChange={(e) =>
+                                    setSliderValue(Number(e.target.value))
+                                }
+                            />
+                            <TimeInput
+                                label='Feierabend'
+                                value={endTime}
+                                onChange={() => {}}
+                                enabled={false}
+                            />
+                        </ComponentContainer>
+                        <div className='w-full max-w-md mt-8'>
+                            <ProgressBar progress={progress} />
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 }

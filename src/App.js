@@ -25,13 +25,27 @@ function App() {
     const [progress, setProgress] = useState(0);
     const [isShiftOver, setIsShiftOver] = useState(false);
 
+    const validateTimeInput = (time) => {
+        const [hours, minutes] = time.split(':').map(Number);
+        if (isNaN(hours) || isNaN(minutes)) {
+            return '00:00';
+        }
+        return time;
+    };
+
     const calculateTimes = () => {
         const now = new Date();
-        const [startHours, startMinutes] = startTime.split(':').map(Number);
-        const [overtimeHours, overtimeMinutes] = plannedOvertime
+        const validStartTime = validateTimeInput(startTime);
+        const validPlannedOvertime = validateTimeInput(plannedOvertime);
+        const validWorkTime = validateTimeInput(workTime);
+
+        const [startHours, startMinutes] = validStartTime
             .split(':')
             .map(Number);
-        const [workHours, workMinutes] = workTime.split(':').map(Number);
+        const [overtimeHours, overtimeMinutes] = validPlannedOvertime
+            .split(':')
+            .map(Number);
+        const [workHours, workMinutes] = validWorkTime.split(':').map(Number);
 
         const startDate = new Date(now);
         startDate.setHours(startHours, startMinutes, 0, 0);

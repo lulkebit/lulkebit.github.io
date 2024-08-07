@@ -91,6 +91,7 @@ function App() {
     };
 
     useEffect(() => {
+        document.title = 'Feierabendrechner';
         const interval = setInterval(calculateTimes, 10);
         return () => clearInterval(interval);
     }, [startTime, plannedOvertime, workTime, sliderValue]);

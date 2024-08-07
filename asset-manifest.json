@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/feierabendrechner/static/css/main.0c1ebd26.css",
+    "main.js": "/feierabendrechner/static/js/main.1ba1d8ba.js",
+    "index.html": "/feierabendrechner/index.html",
+    "main.0c1ebd26.css.map": "/feierabendrechner/static/css/main.0c1ebd26.css.map",
+    "main.1ba1d8ba.js.map": "/feierabendrechner/static/js/main.1ba1d8ba.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0c1ebd26.css",
+    "static/js/main.1ba1d8ba.js"
+  ]
+}

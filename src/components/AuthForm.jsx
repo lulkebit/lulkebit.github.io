@@ -78,6 +78,13 @@ const AuthForm = ({ onAuthSuccess }) => {
                         required
                         minLength={3}
                     />
+                    {!isLogin && (
+                        <p className='text-sm text-sparkasse-gray/70 mt-1 italic'>
+                            Bitte wählen Sie einen Benutzernamen, der keine
+                            Rückschlüsse auf Ihre Person zulässt, um die
+                            Anonymität zu wahren.
+                        </p>
+                    )}
                 </div>
 
                 <div>

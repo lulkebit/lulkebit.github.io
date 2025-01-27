@@ -64,7 +64,7 @@ const WorkTimeTracker = () => {
     }, 0);
 
     return (
-        <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96'>
+        <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
             {/* Sparkassen-Design Elemente */}
             <div className='absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-sparkasse-red/5 to-transparent rounded-full transform translate-x-12 -translate-y-12'></div>
             <div className='absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-sparkasse-red/5 to-transparent rounded-full transform -translate-x-16 translate-y-16'></div>

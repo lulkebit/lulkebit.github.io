@@ -39,6 +39,80 @@ function App() {
 
     const handleAuthSuccess = () => {
         setIsAuthenticated(true);
+        // Lade die Daten für heute
+        const loadTodayData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const response = await axios.get(
+                    'http://localhost:5000/api/arbeitszeiten',
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const today = new Date().toISOString().split('T')[0];
+                const todaysEntry = response.data.find(
+                    (entry) => entry.datum === today
+                );
+
+                if (todaysEntry) {
+                    // Setze alle Felder entsprechend
+                    setStartTime(todaysEntry.startZeit);
+                    setEndTime(todaysEntry.endZeit);
+                    setSliderValue(Number(todaysEntry.pausenZeit));
+
+                    // Berechne die verbleibende Zeit
+                    const now = new Date();
+                    const [endHours, endMinutes] = todaysEntry.endZeit
+                        .split(':')
+                        .map(Number);
+                    const endDate = new Date(now);
+                    endDate.setHours(endHours, endMinutes, 0, 0);
+
+                    if (endDate <= now) {
+                        setRemainingTime('00:00:00');
+                        setProgress(100);
+                        setIsShiftOver(true);
+                    } else {
+                        const [startHours, startMinutes] = todaysEntry.startZeit
+                            .split(':')
+                            .map(Number);
+                        const startDate = new Date(now);
+                        startDate.setHours(startHours, startMinutes, 0, 0);
+
+                        const totalDuration = endDate - startDate;
+                        const elapsed = now - startDate;
+                        const newProgress = Math.min(
+                            100,
+                            (elapsed / totalDuration) * 100
+                        );
+
+                        const diff = endDate - now;
+                        const hours = Math.floor(diff / 3600000);
+                        const minutes = Math.floor((diff % 3600000) / 60000);
+                        const seconds = Math.floor((diff % 60000) / 1000);
+
+                        setRemainingTime(
+                            `${String(hours).padStart(2, '0')}:${String(
+                                minutes
+                            ).padStart(2, '0')}:${String(seconds).padStart(
+                                2,
+                                '0'
+                            )}`
+                        );
+                        setProgress(newProgress);
+                    }
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden der heutigen Daten:', error);
+            }
+        };
+
+        loadTodayData();
     };
 
     const validateTimeInput = (time) => {

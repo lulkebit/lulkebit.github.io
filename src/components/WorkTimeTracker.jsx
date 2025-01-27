@@ -22,17 +22,15 @@ const TimeBar = ({ startZeit, endZeit, pausenZeit, isPrognose = false }) => {
                 <div className='flex h-full'>
                     <div
                         className={`h-full ${
-                            isPrognose 
-                                ? 'bg-sparkasse-red/50' 
+                            isPrognose
+                                ? 'bg-sparkasse-red/50'
                                 : 'bg-sparkasse-red'
                         }`}
                         style={{ width: `${workPercentage}%` }}
                     />
                     <div
                         className={`h-full ${
-                            isPrognose 
-                                ? 'bg-yellow-400/50' 
-                                : 'bg-yellow-400'
+                            isPrognose ? 'bg-yellow-400/50' : 'bg-yellow-400'
                         }`}
                         style={{ width: `${pausePercentage}%` }}
                     />

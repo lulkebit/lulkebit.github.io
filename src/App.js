@@ -256,9 +256,18 @@ function App() {
         // Lade die Daten für heute
         const loadTodayData = async () => {
             try {
+                const token = localStorage.getItem('token');
+                if (!token) return; // Wenn kein Token vorhanden ist, breche ab
+
                 const response = await axios.get(
-                    'http://localhost:5000/api/arbeitszeiten'
+                    'http://localhost:5000/api/arbeitszeiten',
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
                 );
+
                 const today = new Date().toISOString().split('T')[0];
                 const todaysEntry = response.data.find(
                     (entry) => entry.datum === today
@@ -355,7 +364,7 @@ function App() {
         };
 
         loadTodayData();
-    }, []); // Nur beim ersten Laden ausführen
+    }, [refreshTrigger]); // Füge refreshTrigger als Abhängigkeit hinzu
 
     return (
         <div className='min-h-screen bg-gray-50'>

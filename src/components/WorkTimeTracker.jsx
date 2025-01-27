@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import AuthForm from './AuthForm';
 
 const TimeBar = ({ startZeit, endZeit, pausenZeit, isPrognose = false }) => {
     // Überprüfe, ob die Zeiten gültig sind
@@ -74,18 +73,10 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const entriesPerPage = 4;
 
     useEffect(() => {
-        // Prüfe ob Token existiert
-        const token = localStorage.getItem('token');
-        if (token) {
-            setIsAuthenticated(true);
-            fetchArbeitszeiten();
-        } else {
-            setLoading(false);
-        }
+        fetchArbeitszeiten();
     }, [refreshTrigger]);
 
     const fetchArbeitszeiten = async () => {
@@ -129,33 +120,35 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
 
             setArbeitszeiten(sortedArbeitszeiten);
             setLoading(false);
-        } catch (err) {
-            if (err.response?.status === 401) {
-                setIsAuthenticated(false);
-                localStorage.removeItem('token');
-                localStorage.removeItem('username');
-            }
+        } catch (error) {
+            console.error('Fehler beim Laden der Arbeitszeiten:', error);
             setError('Fehler beim Laden der Arbeitszeiten');
             setLoading(false);
         }
     };
 
-    const handleAuthSuccess = (data) => {
-        setIsAuthenticated(true);
-        fetchArbeitszeiten();
-    };
-
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
-        setIsAuthenticated(false);
-        setArbeitszeiten([]);
+        window.location.reload(); // Seite neu laden um Auth-Status zu aktualisieren
     };
 
-    if (!isAuthenticated) {
+    if (loading) {
         return (
             <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
-                <AuthForm onAuthSuccess={handleAuthSuccess} />
+                <div className='flex justify-center items-center h-64'>
+                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sparkasse-red'></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
+                <div className='flex justify-center items-center h-64'>
+                    <p className='text-sparkasse-red'>{error}</p>
+                </div>
             </div>
         );
     }
@@ -178,26 +171,6 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
             const [hours, minutes] = curr.gesamtZeit.split(':').map(Number);
             return acc + hours + minutes / 60;
         }, 0);
-
-    if (loading) {
-        return (
-            <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
-                <div className='flex justify-center items-center h-64'>
-                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sparkasse-red'></div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
-                <div className='flex justify-center items-center h-64'>
-                    <p className='text-sparkasse-red'>{error}</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>

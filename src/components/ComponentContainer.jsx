@@ -10,7 +10,7 @@ const ComponentContainer = ({ children }) => {
                 <div className='relative z-10'>
                     <div className='flex flex-col items-stretch space-y-6'>
                         <h2 className='text-sparkasse-gray text-xl font-semibold mb-4'>
-                            Worktime Tracker
+                            Arbeitszeit
                         </h2>
                         {children}
                     </div>

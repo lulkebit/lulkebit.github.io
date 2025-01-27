@@ -72,6 +72,8 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
     const [arbeitszeiten, setArbeitszeiten] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const entriesPerPage = 4;
 
     useEffect(() => {
         const fetchArbeitszeiten = async () => {
@@ -87,17 +89,14 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
                 const sortedArbeitszeiten = response.data
                     .map((entry) => {
                         if (entry.datum === today) {
-                            // Konvertiere die Endzeit in ein Date-Objekt für heute
                             const [endHours, endMinutes] = entry.endZeit
                                 .split(':')
                                 .map(Number);
                             const endDate = new Date(now);
                             endDate.setHours(endHours, endMinutes, 0, 0);
 
-                            // Wenn die Endzeit in der Zukunft liegt, ist es eine Prognose
                             const isPrognostic = endDate > now;
 
-                            // Formatiere die Gesamtzeit korrekt
                             const gesamtZeit = entry.gesamtZeit || '00:00';
                             return {
                                 ...entry,
@@ -121,6 +120,18 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
 
         fetchArbeitszeiten();
     }, [refreshTrigger]);
+
+    const totalPages = Math.ceil(arbeitszeiten.length / entriesPerPage);
+    const indexOfLastEntry = currentPage * entriesPerPage;
+    const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
+    const currentEntries = arbeitszeiten.slice(
+        indexOfFirstEntry,
+        indexOfLastEntry
+    );
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
 
     const totalArbeitszeit = arbeitszeiten
         .filter((entry) => !entry.isPrognose) // Nur abgeschlossene Tage für die Gesamtzeit
@@ -170,7 +181,7 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
                 </div>
 
                 <div className='space-y-4'>
-                    {arbeitszeiten.map((eintrag) => (
+                    {currentEntries.map((eintrag) => (
                         <div
                             key={eintrag._id}
                             className={`bg-white p-4 rounded-lg border ${
@@ -228,6 +239,74 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
                         </div>
                     ))}
                 </div>
+
+                {/* Paginierung */}
+                {totalPages > 1 && (
+                    <div className='flex justify-center items-center mt-6 space-x-2'>
+                        <button
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className={`p-2 rounded-lg ${
+                                currentPage === 1
+                                    ? 'text-sparkasse-gray/30 cursor-not-allowed'
+                                    : 'text-sparkasse-red hover:bg-sparkasse-red/10'
+                            }`}
+                            aria-label='Vorherige Seite'
+                        >
+                            <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                className='h-5 w-5'
+                                viewBox='0 0 20 20'
+                                fill='currentColor'
+                            >
+                                <path
+                                    fillRule='evenodd'
+                                    d='M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z'
+                                    clipRule='evenodd'
+                                />
+                            </svg>
+                        </button>
+                        {Array.from(
+                            { length: totalPages },
+                            (_, i) => i + 1
+                        ).map((pageNumber) => (
+                            <button
+                                key={pageNumber}
+                                onClick={() => handlePageChange(pageNumber)}
+                                className={`w-8 h-8 rounded-lg ${
+                                    currentPage === pageNumber
+                                        ? 'bg-sparkasse-red text-white'
+                                        : 'text-sparkasse-gray hover:bg-sparkasse-red/10'
+                                }`}
+                            >
+                                {pageNumber}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className={`p-2 rounded-lg ${
+                                currentPage === totalPages
+                                    ? 'text-sparkasse-gray/30 cursor-not-allowed'
+                                    : 'text-sparkasse-red hover:bg-sparkasse-red/10'
+                            }`}
+                            aria-label='Nächste Seite'
+                        >
+                            <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                className='h-5 w-5'
+                                viewBox='0 0 20 20'
+                                fill='currentColor'
+                            >
+                                <path
+                                    fillRule='evenodd'
+                                    d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z'
+                                    clipRule='evenodd'
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

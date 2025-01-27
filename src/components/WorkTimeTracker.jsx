@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import AuthForm from './AuthForm';
 
 const TimeBar = ({ startZeit, endZeit, pausenZeit, isPrognose = false }) => {
     // Überprüfe, ob die Zeiten gültig sind
@@ -73,53 +74,91 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const entriesPerPage = 4;
 
     useEffect(() => {
-        const fetchArbeitszeiten = async () => {
-            try {
-                const response = await axios.get(
-                    'http://localhost:5000/api/arbeitszeiten'
-                );
-
-                const today = new Date().toISOString().split('T')[0];
-                const now = new Date();
-
-                // Sortiere die Einträge und markiere den heutigen als Prognose
-                const sortedArbeitszeiten = response.data
-                    .map((entry) => {
-                        if (entry.datum === today) {
-                            const [endHours, endMinutes] = entry.endZeit
-                                .split(':')
-                                .map(Number);
-                            const endDate = new Date(now);
-                            endDate.setHours(endHours, endMinutes, 0, 0);
-
-                            const isPrognostic = endDate > now;
-
-                            const gesamtZeit = entry.gesamtZeit || '00:00';
-                            return {
-                                ...entry,
-                                isPrognose: isPrognostic,
-                                gesamtZeit: gesamtZeit.includes(':')
-                                    ? gesamtZeit
-                                    : `${gesamtZeit}:00`,
-                            };
-                        }
-                        return entry;
-                    })
-                    .sort((a, b) => new Date(b.datum) - new Date(a.datum));
-
-                setArbeitszeiten(sortedArbeitszeiten);
-                setLoading(false);
-            } catch (err) {
-                setError('Fehler beim Laden der Arbeitszeiten');
-                setLoading(false);
-            }
-        };
-
-        fetchArbeitszeiten();
+        // Prüfe ob Token existiert
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsAuthenticated(true);
+            fetchArbeitszeiten();
+        } else {
+            setLoading(false);
+        }
     }, [refreshTrigger]);
+
+    const fetchArbeitszeiten = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(
+                'http://localhost:5000/api/arbeitszeiten',
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+
+            const sortedArbeitszeiten = response.data
+                .map((entry) => {
+                    if (entry.datum === today) {
+                        const [endHours, endMinutes] = entry.endZeit
+                            .split(':')
+                            .map(Number);
+                        const endDate = new Date(now);
+                        endDate.setHours(endHours, endMinutes, 0, 0);
+
+                        const isPrognostic = endDate > now;
+
+                        const gesamtZeit = entry.gesamtZeit || '00:00';
+                        return {
+                            ...entry,
+                            isPrognose: isPrognostic,
+                            gesamtZeit: gesamtZeit.includes(':')
+                                ? gesamtZeit
+                                : `${gesamtZeit}:00`,
+                        };
+                    }
+                    return entry;
+                })
+                .sort((a, b) => new Date(b.datum) - new Date(a.datum));
+
+            setArbeitszeiten(sortedArbeitszeiten);
+            setLoading(false);
+        } catch (err) {
+            if (err.response?.status === 401) {
+                setIsAuthenticated(false);
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+            }
+            setError('Fehler beim Laden der Arbeitszeiten');
+            setLoading(false);
+        }
+    };
+
+    const handleAuthSuccess = (data) => {
+        setIsAuthenticated(true);
+        fetchArbeitszeiten();
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        setIsAuthenticated(false);
+        setArbeitszeiten([]);
+    };
+
+    if (!isAuthenticated) {
+        return (
+            <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
+                <AuthForm onAuthSuccess={handleAuthSuccess} />
+            </div>
+        );
+    }
 
     const totalPages = Math.ceil(arbeitszeiten.length / entriesPerPage);
     const indexOfLastEntry = currentPage * entriesPerPage;
@@ -134,7 +173,7 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
     };
 
     const totalArbeitszeit = arbeitszeiten
-        .filter((entry) => !entry.isPrognose) // Nur abgeschlossene Tage für die Gesamtzeit
+        .filter((entry) => !entry.isPrognose)
         .reduce((acc, curr) => {
             const [hours, minutes] = curr.gesamtZeit.split(':').map(Number);
             return acc + hours + minutes / 60;
@@ -169,14 +208,43 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
 
             <div className='relative z-10'>
                 <div className='flex justify-between items-center mb-6'>
-                    <h2 className='text-lg font-semibold text-sparkasse-gray'>
-                        Arbeitszeiterfassung
-                    </h2>
-                    <div className='text-right'>
-                        <p className='text-xs text-sparkasse-gray/70'>Gesamt</p>
-                        <p className='text-lg font-semibold text-sparkasse-red'>
-                            {totalArbeitszeit.toFixed(1)}h
+                    <div>
+                        <h2 className='text-lg font-semibold text-sparkasse-gray'>
+                            Arbeitszeiterfassung
+                        </h2>
+                        <p className='text-sm text-sparkasse-gray/70'>
+                            {localStorage.getItem('username')}
                         </p>
+                    </div>
+                    <div className='flex items-center space-x-4'>
+                        <div className='text-right'>
+                            <p className='text-xs text-sparkasse-gray/70'>
+                                Gesamt
+                            </p>
+                            <p className='text-lg font-semibold text-sparkasse-red'>
+                                {totalArbeitszeit.toFixed(1)}h
+                            </p>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className='text-sparkasse-gray/70 hover:text-sparkasse-red'
+                            title='Abmelden'
+                        >
+                            <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                className='h-5 w-5'
+                                viewBox='0 0 24 24'
+                                fill='none'
+                                stroke='currentColor'
+                                strokeWidth='2'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                            >
+                                <path d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4' />
+                                <polyline points='16 17 21 12 16 7' />
+                                <line x1='21' y1='12' x2='9' y2='12' />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 

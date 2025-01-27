@@ -189,15 +189,25 @@ function App() {
         const arbeitszeit = {
             datum: today,
             startZeit: startTime,
-            endZeit: newEndTime, // Verwende die berechnete Endzeit direkt
+            endZeit: newEndTime,
             pausenZeit: String(sliderValue),
-            gesamtZeit: calculateGesamtZeit(startTime, newEndTime, sliderValue), // Berechne Gesamtzeit mit der neuen Endzeit
+            gesamtZeit: calculateGesamtZeit(startTime, newEndTime, sliderValue),
         };
 
         try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Nicht authentifiziert');
+            }
+
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+
             // Prüfe, ob bereits ein Eintrag für heute existiert
             const response = await axios.get(
-                'http://localhost:5000/api/arbeitszeiten'
+                'http://localhost:5000/api/arbeitszeiten',
+                { headers }
             );
             const todaysEntry = response.data.find(
                 (entry) => entry.datum === today
@@ -218,14 +228,16 @@ function App() {
                 // Aktualisiere den bestehenden Eintrag
                 await axios.put(
                     `http://localhost:5000/api/arbeitszeiten/${todaysEntry._id}`,
-                    arbeitszeit
+                    arbeitszeit,
+                    { headers }
                 );
                 setCurrentArbeitszeitId(todaysEntry._id);
             } else {
                 // Erstelle einen neuen Eintrag
                 const newEntry = await axios.post(
                     'http://localhost:5000/api/arbeitszeiten',
-                    arbeitszeit
+                    arbeitszeit,
+                    { headers }
                 );
                 setCurrentArbeitszeitId(newEntry.data._id);
             }

@@ -2,14 +2,14 @@ import React from 'react';
 
 const TimeInput = ({ label, value, onChange, enabled = true }) => {
     return (
-        <div className='flex items-center mb-4'>
+        <div className='flex items-center justify-between gap-3 group'>
             <label
                 htmlFor={label.toLowerCase().replace(' ', '-')}
-                className='flex-shrink-0 mr-3 text-sm font-medium text-gray-700 w-24'
+                className='text-sparkasse-gray/80 font-medium text-sm tracking-wide whitespace-nowrap group-hover:text-sparkasse-gray transition-colors'
             >
                 {label}
             </label>
-            <div className='flex-grow'>
+            <div className='relative'>
                 <input
                     type='time'
                     id={label.toLowerCase().replace(' ', '-')}
@@ -17,15 +17,28 @@ const TimeInput = ({ label, value, onChange, enabled = true }) => {
                     onChange={onChange}
                     disabled={!enabled}
                     className={`
-            w-30 px-3 py-2 
-            bg-white border ${enabled ? 'border-gray-300' : 'border-gray-200'} 
-            rounded-md shadow-sm 
-            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent
-            ${enabled ? 'text-gray-700' : 'text-gray-500 bg-gray-50'}
-            ${enabled ? 'hover:border-gray-400' : ''}
-            transition duration-150 ease-in-out
-          `}
+                        w-28 px-2.5 py-1.5
+                        bg-white border-2
+                        ${
+                            enabled
+                                ? 'border-sparkasse-gray/10 group-hover:border-sparkasse-gray/20'
+                                : 'border-sparkasse-gray/5'
+                        } 
+                        rounded-lg
+                        focus:outline-none focus:border-sparkasse-red focus:ring-1 focus:ring-sparkasse-red/20
+                        ${
+                            enabled
+                                ? 'text-sparkasse-gray'
+                                : 'text-sparkasse-gray/40 bg-sparkasse-lightgray'
+                        }
+                        transition-all duration-200 ease-in-out
+                        text-base font-medium tracking-wide
+                        appearance-none
+                    `}
                 />
+                {!enabled && (
+                    <div className='absolute inset-0 bg-sparkasse-lightgray/50 rounded-lg cursor-not-allowed'></div>
+                )}
             </div>
         </div>
     );

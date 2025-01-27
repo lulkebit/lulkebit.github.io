@@ -4,14 +4,28 @@ function ProgressBar({ progress }) {
     const roundedProgress = Math.round(progress);
 
     return (
-        <div className='flex flex-col items-center'>
-            <div className='w-1/2 bg-gray-200 rounded-full h-2.5 mb-2 relative'>
+        <div className='flex flex-col items-center w-full max-w-md mx-auto'>
+            <div className='w-full h-3 bg-sparkasse-red/10 rounded-full mb-2 relative overflow-hidden'>
                 <div
-                    className='bg-gradient-to-r from-purple-600 to-indigo-600 h-2.5 rounded-full transition-all duration-500 ease-in-out'
+                    className='absolute top-0 left-0 h-full bg-sparkasse-red rounded-full transition-all duration-500 ease-out'
                     style={{ width: `${roundedProgress}%` }}
-                ></div>
+                >
+                    <div className='absolute inset-0 bg-white/20'></div>
+                </div>
             </div>
-            <span className='text-black text-sm'>{roundedProgress}%</span>
+            <div className='flex items-center space-x-2'>
+                <svg
+                    className='w-4 h-4 text-sparkasse-red'
+                    viewBox='0 0 24 24'
+                    fill='currentColor'
+                >
+                    <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z' />
+                    <path d='M12 6v6l4 4' />
+                </svg>
+                <span className='text-sparkasse-gray font-medium'>
+                    {roundedProgress}% abgeschlossen
+                </span>
+            </div>
         </div>
     );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
+import ProgressBar from './Progressbar';
 
-const Header = ({ remainingTime }) => {
+const Header = ({ remainingTime, progress }) => {
     return (
         <header className='bg-sparkasse-red text-white py-6 px-4 shadow-lg relative overflow-hidden'>
             <div className='absolute top-0 right-0 w-32 h-32 transform translate-x-16 -translate-y-8'>
@@ -19,7 +20,7 @@ const Header = ({ remainingTime }) => {
                         Feierabendrechner
                     </h1>
                 </div>
-                <div className='bg-white/10 rounded-lg py-3 px-6 backdrop-blur-sm max-w-xs mx-auto'>
+                <div className='bg-white/10 rounded-lg py-3 px-6 backdrop-blur-sm max-w-xs mx-auto mb-4'>
                     <p className='text-center'>
                         <span className='text-sm uppercase tracking-wide opacity-90'>
                             Feierabend in
@@ -29,6 +30,9 @@ const Header = ({ remainingTime }) => {
                             {remainingTime}
                         </span>
                     </p>
+                </div>
+                <div className='max-w-md mx-auto'>
+                    <ProgressBar progress={progress} />
                 </div>
             </div>
         </header>

@@ -103,7 +103,7 @@ function App() {
                 <ShiftOverAnimation />
             ) : (
                 <>
-                    <Header remainingTime={remainingTime} />
+                    <Header remainingTime={remainingTime} progress={progress} />
                     <main className='container mx-auto px-8 py-12'>
                         <div className='flex justify-center gap-12'>
                             {/* Feierabendrechner */}
@@ -155,11 +155,6 @@ function App() {
                             <div>
                                 <WorkTimeTracker />
                             </div>
-                        </div>
-
-                        {/* Progressbar mittig */}
-                        <div className='mt-8 max-w-2xl mx-auto'>
-                            <ProgressBar progress={progress} />
                         </div>
                     </main>
                 </>

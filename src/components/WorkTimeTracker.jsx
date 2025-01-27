@@ -19,17 +19,20 @@ const TimeBar = ({ startZeit, endZeit, pausenZeit, isPrognose = false }) => {
         <div className='flex items-center space-x-2'>
             <span className='text-xs text-sparkasse-gray/70'>{startZeit}</span>
             <div className='flex-grow h-3 bg-sparkasse-gray/10 rounded-md overflow-hidden'>
-                <div
-                    className={`h-full relative ${
-                        isPrognose ? 'bg-sparkasse-red/50' : 'bg-sparkasse-red'
-                    }`}
-                    style={{ width: `${workPercentage}%` }}
-                >
+                <div className='flex h-full'>
                     <div
-                        className={`absolute right-0 h-full ${
-                            isPrognose
-                                ? 'bg-sparkasse-red/20'
-                                : 'bg-sparkasse-red/30'
+                        className={`h-full ${
+                            isPrognose 
+                                ? 'bg-sparkasse-red/50' 
+                                : 'bg-sparkasse-red'
+                        }`}
+                        style={{ width: `${workPercentage}%` }}
+                    />
+                    <div
+                        className={`h-full ${
+                            isPrognose 
+                                ? 'bg-yellow-400/50' 
+                                : 'bg-yellow-400'
                         }`}
                         style={{ width: `${pausePercentage}%` }}
                     />
@@ -183,8 +186,8 @@ const WorkTimeTracker = () => {
                                         <div
                                             className={`w-1.5 h-1.5 rounded-full ${
                                                 eintrag.isPrognose
-                                                    ? 'bg-sparkasse-red/20'
-                                                    : 'bg-sparkasse-red/30'
+                                                    ? 'bg-yellow-400/50'
+                                                    : 'bg-yellow-400'
                                             }`}
                                         ></div>
                                         <span>Pause</span>

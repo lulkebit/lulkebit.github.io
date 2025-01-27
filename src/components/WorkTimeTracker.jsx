@@ -169,8 +169,15 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
         .filter((entry) => !entry.isPrognose)
         .reduce((acc, curr) => {
             const [hours, minutes] = curr.gesamtZeit.split(':').map(Number);
-            return acc + hours + minutes / 60;
+            return acc + hours * 60 + minutes; // Konvertiere alles in Minuten
         }, 0);
+
+    // Konvertiere die Gesamtminuten zurück in Stunden und Minuten
+    const totalHours = Math.floor(totalArbeitszeit / 60);
+    const totalMinutes = totalArbeitszeit % 60;
+    const formattedTotal = `${String(totalHours).padStart(2, '0')}:${String(
+        totalMinutes
+    ).padStart(2, '0')}`;
 
     return (
         <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
@@ -195,7 +202,7 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
                                 Gesamt
                             </p>
                             <p className='text-lg font-semibold text-sparkasse-red'>
-                                {totalArbeitszeit.toFixed(1)}h
+                                {formattedTotal}h
                             </p>
                         </div>
                         <button

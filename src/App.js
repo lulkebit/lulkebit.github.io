@@ -19,7 +19,7 @@ function App() {
     const [sliderValue, setSliderValue] = useState(30);
     const [startTime, setStartTime] = useState(getCurrentTime());
     const [plannedOvertime, setPlannedOvertime] = useState('00:00');
-    const [workTime, setWorkTime] = useState('07:48');
+    const [workTime, setWorkTime] = useState('07:36');
     const [remainingTime, setRemainingTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [progress, setProgress] = useState(0);

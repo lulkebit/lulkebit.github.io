@@ -75,6 +75,12 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const entriesPerPage = 4;
 
+    // Funktion zum Formatieren des Datums
+    const formatDate = (dateStr) => {
+        const [year, month, day] = dateStr.split('-');
+        return `${day}.${month}.${year}`;
+    };
+
     useEffect(() => {
         fetchArbeitszeiten();
     }, [refreshTrigger]);
@@ -241,7 +247,7 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
                             <div className='flex justify-between items-center mb-2'>
                                 <div className='flex items-center space-x-2'>
                                     <span className='text-sm text-sparkasse-gray font-medium'>
-                                        {eintrag.datum}
+                                        {formatDate(eintrag.datum)}
                                     </span>
                                     {eintrag.isPrognose && (
                                         <span className='text-xs text-sparkasse-red/70 font-medium px-2 py-0.5 bg-sparkasse-red/10 rounded-full'>

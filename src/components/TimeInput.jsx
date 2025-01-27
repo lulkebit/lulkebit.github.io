@@ -2,10 +2,10 @@ import React from 'react';
 
 const TimeInput = ({ label, value, onChange, enabled = true }) => {
     return (
-        <div className='flex items-center justify-between gap-3 group'>
+        <div className='flex items-center justify-between gap-4 group p-2 rounded-lg hover:bg-sparkasse-red/5 transition-colors'>
             <label
                 htmlFor={label.toLowerCase().replace(' ', '-')}
-                className='text-sparkasse-gray/80 font-medium text-sm tracking-wide whitespace-nowrap group-hover:text-sparkasse-gray transition-colors'
+                className='text-sparkasse-gray/90 font-medium text-sm tracking-wide whitespace-nowrap group-hover:text-sparkasse-gray transition-colors'
             >
                 {label}
             </label>
@@ -17,15 +17,15 @@ const TimeInput = ({ label, value, onChange, enabled = true }) => {
                     onChange={onChange}
                     disabled={!enabled}
                     className={`
-                        w-28 px-2.5 py-1.5
+                        w-32 px-3 py-2
                         bg-white border-2
                         ${
                             enabled
-                                ? 'border-sparkasse-gray/10 group-hover:border-sparkasse-gray/20'
+                                ? 'border-sparkasse-gray/15 group-hover:border-sparkasse-red/30'
                                 : 'border-sparkasse-gray/5'
                         } 
                         rounded-lg
-                        focus:outline-none focus:border-sparkasse-red focus:ring-1 focus:ring-sparkasse-red/20
+                        focus:outline-none focus:border-sparkasse-red focus:ring-2 focus:ring-sparkasse-red/20
                         ${
                             enabled
                                 ? 'text-sparkasse-gray'
@@ -34,6 +34,7 @@ const TimeInput = ({ label, value, onChange, enabled = true }) => {
                         transition-all duration-200 ease-in-out
                         text-base font-medium tracking-wide
                         appearance-none
+                        shadow-sm
                     `}
                 />
                 {!enabled && (

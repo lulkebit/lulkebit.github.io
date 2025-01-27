@@ -1,5 +1,6 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 import Header from './components/Header';
 import ComponentContainer from './components/ComponentContainer';
@@ -25,6 +26,7 @@ function App() {
     const [endTime, setEndTime] = useState('');
     const [progress, setProgress] = useState(0);
     const [isShiftOver, setIsShiftOver] = useState(false);
+    const [currentArbeitszeitId, setCurrentArbeitszeitId] = useState(null);
 
     const validateTimeInput = (time) => {
         const [hours, minutes] = time.split(':').map(Number);
@@ -32,6 +34,78 @@ function App() {
             return '00:00';
         }
         return time;
+    };
+
+    const saveArbeitszeit = async () => {
+        const today = new Date().toISOString().split('T')[0];
+
+        const arbeitszeit = {
+            datum: today,
+            startZeit: startTime,
+            endZeit: endTime,
+            pausenZeit: String(sliderValue),
+            gesamtZeit: calculateGesamtZeit(startTime, endTime, sliderValue),
+        };
+
+        try {
+            // Prüfe, ob bereits ein Eintrag für heute existiert
+            const response = await axios.get(
+                'http://localhost:5000/api/arbeitszeiten'
+            );
+            const todaysEntry = response.data.find(
+                (entry) => entry.datum === today
+            );
+
+            if (todaysEntry) {
+                // Vergleiche die Werte
+                if (
+                    todaysEntry.startZeit === arbeitszeit.startZeit &&
+                    todaysEntry.endZeit === arbeitszeit.endZeit &&
+                    todaysEntry.pausenZeit === arbeitszeit.pausenZeit &&
+                    todaysEntry.gesamtZeit === arbeitszeit.gesamtZeit
+                ) {
+                    // Keine Änderungen, nichts zu tun
+                    return;
+                }
+
+                // Aktualisiere den bestehenden Eintrag
+                await axios.put(
+                    `http://localhost:5000/api/arbeitszeiten/${todaysEntry._id}`,
+                    arbeitszeit
+                );
+                setCurrentArbeitszeitId(todaysEntry._id);
+            } else {
+                // Erstelle einen neuen Eintrag
+                const newEntry = await axios.post(
+                    'http://localhost:5000/api/arbeitszeiten',
+                    arbeitszeit
+                );
+                setCurrentArbeitszeitId(newEntry.data._id);
+            }
+        } catch (error) {
+            console.error('Fehler beim Speichern der Arbeitszeit:', error);
+        }
+    };
+
+    const calculateGesamtZeit = (start, end, pause) => {
+        if (!start || !end) return '00:00';
+
+        const [startHours, startMinutes] = start.split(':').map(Number);
+        const [endHours, endMinutes] = end.split(':').map(Number);
+
+        let totalMinutes =
+            endHours * 60 +
+            endMinutes -
+            (startHours * 60 + startMinutes) -
+            Number(pause);
+
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(
+            2,
+            '0'
+        )}`;
     };
 
     const calculateTimes = () => {
@@ -62,7 +136,8 @@ function App() {
             setRemainingTime('00:00:00');
             setEndTime(getCurrentTime());
             setProgress(100);
-            setIsShiftOver(true); // Set shift over state
+            setIsShiftOver(true);
+            saveArbeitszeit();
             return;
         }
 
@@ -82,12 +157,12 @@ function App() {
             )}:${String(seconds).padStart(2, '0')}`
         );
 
-        setEndTime(
-            `${String(endDate.getHours()).padStart(2, '0')}:${String(
-                endDate.getMinutes()
-            ).padStart(2, '0')}`
-        );
+        const newEndTime = `${String(endDate.getHours()).padStart(
+            2,
+            '0'
+        )}:${String(endDate.getMinutes()).padStart(2, '0')}`;
 
+        setEndTime(newEndTime);
         setProgress(newProgress);
     };
 
@@ -97,6 +172,17 @@ function App() {
         return () => clearInterval(interval);
     }, [startTime, plannedOvertime, workTime, sliderValue]);
 
+    // Effekt für das automatische Speichern bei Änderungen
+    useEffect(() => {
+        const debounceTimer = setTimeout(() => {
+            if (startTime && endTime) {
+                saveArbeitszeit();
+            }
+        }, 1000); // Warte 1 Sekunde nach der letzten Änderung
+
+        return () => clearTimeout(debounceTimer);
+    }, [startTime, endTime, sliderValue]);
+
     return (
         <div className='min-h-screen bg-gray-50'>
             {isShiftOver ? (
@@ -105,7 +191,7 @@ function App() {
                 <>
                     <Header remainingTime={remainingTime} progress={progress} />
                     <main className='container mx-auto px-8 py-12'>
-                        <div className='flex justify-center gap-12'>
+                        <div className='flex flex-wrap justify-center gap-12'>
                             {/* Feierabendrechner */}
                             <div>
                                 <ComponentContainer>
@@ -152,7 +238,7 @@ function App() {
                             </div>
 
                             {/* Arbeitszeiterfassung */}
-                            <div>
+                            <div className='space-y-8'>
                                 <WorkTimeTracker />
                             </div>
                         </div>

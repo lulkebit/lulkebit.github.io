@@ -1,30 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const mockData = [
-    {
-        datum: '2024-03-18',
-        startZeit: '08:00',
-        endZeit: '16:30',
-        pausenZeit: '30',
-        gesamtZeit: '8:00',
-    },
-    {
-        datum: '2024-03-19',
-        startZeit: '07:45',
-        endZeit: '16:15',
-        pausenZeit: '45',
-        gesamtZeit: '7:45',
-    },
-    {
-        datum: '2024-03-20',
-        startZeit: '08:15',
-        endZeit: '17:00',
-        pausenZeit: '30',
-        gesamtZeit: '8:15',
-    },
-];
-
-const TimeBar = ({ startZeit, endZeit, pausenZeit }) => {
+const TimeBar = ({ startZeit, endZeit, pausenZeit, isPrognose = false }) => {
     const startMinutes =
         parseInt(startZeit.split(':')[0]) * 60 +
         parseInt(startZeit.split(':')[1]);
@@ -43,11 +20,17 @@ const TimeBar = ({ startZeit, endZeit, pausenZeit }) => {
             <span className='text-xs text-sparkasse-gray/70'>{startZeit}</span>
             <div className='flex-grow h-3 bg-sparkasse-gray/10 rounded-md overflow-hidden'>
                 <div
-                    className='h-full bg-sparkasse-red relative'
+                    className={`h-full relative ${
+                        isPrognose ? 'bg-sparkasse-red/50' : 'bg-sparkasse-red'
+                    }`}
                     style={{ width: `${workPercentage}%` }}
                 >
                     <div
-                        className='absolute right-0 h-full bg-sparkasse-red/30'
+                        className={`absolute right-0 h-full ${
+                            isPrognose
+                                ? 'bg-sparkasse-red/20'
+                                : 'bg-sparkasse-red/30'
+                        }`}
                         style={{ width: `${pausePercentage}%` }}
                     />
                 </div>
@@ -58,10 +41,79 @@ const TimeBar = ({ startZeit, endZeit, pausenZeit }) => {
 };
 
 const WorkTimeTracker = () => {
-    const totalArbeitszeit = mockData.reduce((acc, curr) => {
-        const [hours, minutes] = curr.gesamtZeit.split(':').map(Number);
-        return acc + hours + minutes / 60;
-    }, 0);
+    const [arbeitszeiten, setArbeitszeiten] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchArbeitszeiten = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:5000/api/arbeitszeiten'
+                );
+
+                const today = new Date().toISOString().split('T')[0];
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+
+                // Sortiere die Einträge und markiere den heutigen als Prognose
+                const sortedArbeitszeiten = response.data
+                    .map((entry) => {
+                        if (entry.datum === today) {
+                            const [endHours, endMinutes] = entry.endZeit
+                                .split(':')
+                                .map(Number);
+                            const isPrognostic =
+                                currentHour < endHours ||
+                                (currentHour === endHours &&
+                                    currentMinute < endMinutes);
+                            return {
+                                ...entry,
+                                isPrognose: isPrognostic,
+                            };
+                        }
+                        return entry;
+                    })
+                    .sort((a, b) => new Date(b.datum) - new Date(a.datum));
+
+                setArbeitszeiten(sortedArbeitszeiten);
+                setLoading(false);
+            } catch (err) {
+                setError('Fehler beim Laden der Arbeitszeiten');
+                setLoading(false);
+            }
+        };
+
+        fetchArbeitszeiten();
+    }, []);
+
+    const totalArbeitszeit = arbeitszeiten
+        .filter((entry) => !entry.isPrognose) // Nur abgeschlossene Tage für die Gesamtzeit
+        .reduce((acc, curr) => {
+            const [hours, minutes] = curr.gesamtZeit.split(':').map(Number);
+            return acc + hours + minutes / 60;
+        }, 0);
+
+    if (loading) {
+        return (
+            <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
+                <div className='flex justify-center items-center h-64'>
+                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sparkasse-red'></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
+                <div className='flex justify-center items-center h-64'>
+                    <p className='text-sparkasse-red'>{error}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className='bg-white rounded-xl shadow-lg p-6 relative overflow-hidden border-t-4 border-sparkasse-red w-96 m-8'>
@@ -84,15 +136,26 @@ const WorkTimeTracker = () => {
                 </div>
 
                 <div className='space-y-4'>
-                    {mockData.map((eintrag, index) => (
+                    {arbeitszeiten.map((eintrag) => (
                         <div
-                            key={index}
-                            className='bg-white p-4 rounded-lg border border-sparkasse-gray/10 hover:border-sparkasse-red/30 transition-colors duration-150'
+                            key={eintrag._id}
+                            className={`bg-white p-4 rounded-lg border ${
+                                eintrag.isPrognose
+                                    ? 'border-sparkasse-red/20 bg-sparkasse-red/5'
+                                    : 'border-sparkasse-gray/10 hover:border-sparkasse-red/30'
+                            } transition-colors duration-150`}
                         >
                             <div className='flex justify-between items-center mb-2'>
-                                <span className='text-sm text-sparkasse-gray font-medium'>
-                                    {eintrag.datum}
-                                </span>
+                                <div className='flex items-center space-x-2'>
+                                    <span className='text-sm text-sparkasse-gray font-medium'>
+                                        {eintrag.datum}
+                                    </span>
+                                    {eintrag.isPrognose && (
+                                        <span className='text-xs text-sparkasse-red/70 font-medium px-2 py-0.5 bg-sparkasse-red/10 rounded-full'>
+                                            Prognose
+                                        </span>
+                                    )}
+                                </div>
                                 <span className='text-sm text-sparkasse-red font-semibold'>
                                     {eintrag.gesamtZeit}h
                                 </span>
@@ -101,16 +164,29 @@ const WorkTimeTracker = () => {
                                 startZeit={eintrag.startZeit}
                                 endZeit={eintrag.endZeit}
                                 pausenZeit={eintrag.pausenZeit}
+                                isPrognose={eintrag.isPrognose}
                             />
                             <div className='mt-3 flex justify-between text-xs text-sparkasse-gray/70'>
                                 <span>Pause: {eintrag.pausenZeit} Min</span>
                                 <div className='flex items-center space-x-2'>
                                     <div className='flex items-center space-x-1'>
-                                        <div className='w-1.5 h-1.5 bg-sparkasse-red rounded-full'></div>
+                                        <div
+                                            className={`w-1.5 h-1.5 rounded-full ${
+                                                eintrag.isPrognose
+                                                    ? 'bg-sparkasse-red/50'
+                                                    : 'bg-sparkasse-red'
+                                            }`}
+                                        ></div>
                                         <span>Arbeitszeit</span>
                                     </div>
                                     <div className='flex items-center space-x-1'>
-                                        <div className='w-1.5 h-1.5 bg-sparkasse-red/30 rounded-full'></div>
+                                        <div
+                                            className={`w-1.5 h-1.5 rounded-full ${
+                                                eintrag.isPrognose
+                                                    ? 'bg-sparkasse-red/20'
+                                                    : 'bg-sparkasse-red/30'
+                                            }`}
+                                        ></div>
                                         <span>Pause</span>
                                     </div>
                                 </div>

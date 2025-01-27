@@ -2,18 +2,45 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const TimeBar = ({ startZeit, endZeit, pausenZeit, isPrognose = false }) => {
+    // Überprüfe, ob die Zeiten gültig sind
+    if (
+        !startZeit ||
+        !endZeit ||
+        startZeit === '00:00' ||
+        endZeit === '00:00'
+    ) {
+        return (
+            <div className='flex items-center space-x-2'>
+                <span className='text-xs text-sparkasse-gray/70'>
+                    {startZeit || '00:00'}
+                </span>
+                <div className='flex-grow h-3 bg-sparkasse-gray/10 rounded-md'></div>
+                <span className='text-xs text-sparkasse-gray/70'>
+                    {endZeit || '00:00'}
+                </span>
+            </div>
+        );
+    }
+
     const startMinutes =
         parseInt(startZeit.split(':')[0]) * 60 +
         parseInt(startZeit.split(':')[1]);
     const endMinutes =
         parseInt(endZeit.split(':')[0]) * 60 + parseInt(endZeit.split(':')[1]);
-    const pause = parseInt(pausenZeit);
+    const pause = parseInt(pausenZeit) || 0;
 
-    const totalMinutes = endMinutes - startMinutes;
-    const workMinutes = totalMinutes - pause;
+    // Behandle den Fall, wenn die Endzeit vor der Startzeit liegt
+    let totalMinutes =
+        endMinutes >= startMinutes
+            ? endMinutes - startMinutes
+            : 24 * 60 - startMinutes + endMinutes;
 
-    const workPercentage = (workMinutes / totalMinutes) * 100;
-    const pausePercentage = (pause / totalMinutes) * 100;
+    const workMinutes = Math.max(0, totalMinutes - pause);
+
+    // Berechne die Prozentsätze nur wenn totalMinutes > 0
+    const workPercentage =
+        totalMinutes > 0 ? (workMinutes / totalMinutes) * 100 : 0;
+    const pausePercentage = totalMinutes > 0 ? (pause / totalMinutes) * 100 : 0;
 
     return (
         <div className='flex items-center space-x-2'>
@@ -41,7 +68,7 @@ const TimeBar = ({ startZeit, endZeit, pausenZeit, isPrognose = false }) => {
     );
 };
 
-const WorkTimeTracker = () => {
+const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
     const [arbeitszeiten, setArbeitszeiten] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -55,23 +82,29 @@ const WorkTimeTracker = () => {
 
                 const today = new Date().toISOString().split('T')[0];
                 const now = new Date();
-                const currentHour = now.getHours();
-                const currentMinute = now.getMinutes();
 
                 // Sortiere die Einträge und markiere den heutigen als Prognose
                 const sortedArbeitszeiten = response.data
                     .map((entry) => {
                         if (entry.datum === today) {
+                            // Konvertiere die Endzeit in ein Date-Objekt für heute
                             const [endHours, endMinutes] = entry.endZeit
                                 .split(':')
                                 .map(Number);
-                            const isPrognostic =
-                                currentHour < endHours ||
-                                (currentHour === endHours &&
-                                    currentMinute < endMinutes);
+                            const endDate = new Date(now);
+                            endDate.setHours(endHours, endMinutes, 0, 0);
+
+                            // Wenn die Endzeit in der Zukunft liegt, ist es eine Prognose
+                            const isPrognostic = endDate > now;
+
+                            // Formatiere die Gesamtzeit korrekt
+                            const gesamtZeit = entry.gesamtZeit || '00:00';
                             return {
                                 ...entry,
                                 isPrognose: isPrognostic,
+                                gesamtZeit: gesamtZeit.includes(':')
+                                    ? gesamtZeit
+                                    : `${gesamtZeit}:00`,
                             };
                         }
                         return entry;
@@ -87,7 +120,7 @@ const WorkTimeTracker = () => {
         };
 
         fetchArbeitszeiten();
-    }, []);
+    }, [refreshTrigger]);
 
     const totalArbeitszeit = arbeitszeiten
         .filter((entry) => !entry.isPrognose) // Nur abgeschlossene Tage für die Gesamtzeit

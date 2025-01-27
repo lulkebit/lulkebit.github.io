@@ -89,7 +89,7 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get(
-                'http://localhost:5000/api/arbeitszeiten',
+                'https://feierabendrechner-backend.onrender.com:10000/api/arbeitszeiten',
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

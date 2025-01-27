@@ -16,7 +16,7 @@ const AuthForm = ({ onAuthSuccess }) => {
         try {
             const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
             const response = await axios.post(
-                `http://localhost:5000${endpoint}`,
+                `https://feierabendrechner-backend.onrender.com:10000${endpoint}`,
                 {
                     username,
                     password,

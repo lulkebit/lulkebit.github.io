@@ -1,7 +1,9 @@
 import axios from 'axios';
 import ErrorService from './errorService';
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const BASE_URL =
+    process.env.REACT_APP_API_URL ||
+    'https://feierabendrechner-backend.onrender.com:10000';
 
 class ApiService {
     constructor() {

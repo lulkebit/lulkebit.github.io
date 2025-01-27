@@ -37,6 +37,10 @@ function App() {
         setIsAuthenticated(!!token);
     }, []);
 
+    const handleCloseShiftOver = () => {
+        setIsShiftOver(false);
+    };
+
     const handleAuthSuccess = () => {
         setIsAuthenticated(true);
         // Lade die Daten für heute
@@ -455,7 +459,12 @@ function App() {
     return (
         <div className='min-h-screen bg-gray-50'>
             {isShiftOver ? (
-                <ShiftOverAnimation />
+                <div
+                    className='fixed inset-0 z-[50] bg-black/50 backdrop-blur-sm'
+                    onClick={handleCloseShiftOver}
+                >
+                    <ShiftOverAnimation onClose={handleCloseShiftOver} />
+                </div>
             ) : (
                 <>
                     <Header remainingTime={remainingTime} progress={progress} />

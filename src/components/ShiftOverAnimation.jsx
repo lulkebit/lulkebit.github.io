@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import '../css/ShiftOverAnimation.css';
 
-const ShiftOverAnimation = () => {
+const ShiftOverAnimation = ({ onClose }) => {
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
@@ -10,7 +10,29 @@ const ShiftOverAnimation = () => {
     }, []);
 
     return (
-        <div className='fixed inset-0 bg-gradient-to-b from-sparkasse-red to-sparkasse-darkred flex flex-col items-center justify-center p-4 overflow-hidden'>
+        <div className='fixed inset-0 flex items-center justify-center bg-gradient-to-b from-sparkasse-red to-sparkasse-darkred z-[60]'>
+            {/* Schließen Button */}
+            <button
+                onClick={onClose}
+                className='absolute top-4 right-4 z-[80] text-white/70 hover:text-white transition-colors duration-200'
+                aria-label='Schließen'
+            >
+                <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='h-8 w-8'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                    strokeWidth={2}
+                >
+                    <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M6 18L18 6M6 6l12 12'
+                    />
+                </svg>
+            </button>
+
             {/* Hintergrund-Dekoration */}
             <div className='absolute inset-0 overflow-hidden'>
                 <div className='absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2'></div>
@@ -18,7 +40,7 @@ const ShiftOverAnimation = () => {
             </div>
 
             {/* Konfetti-Animation */}
-            <div className='confetti-container'>
+            <div className='confetti-container absolute inset-0'>
                 {[...Array(20)].map((_, i) => (
                     <div
                         key={i}
@@ -33,8 +55,10 @@ const ShiftOverAnimation = () => {
                 ))}
             </div>
 
-            {/* Hauptinhalt */}
-            <div className='relative z-10 text-center'>
+            <div
+                className='relative z-[70] text-center p-8'
+                onClick={(e) => e.stopPropagation()}
+            >
                 <h1 className='text-white text-5xl md:text-6xl font-bold mb-6 animate-scale-up'>
                     Feierabend!
                 </h1>
@@ -51,8 +75,9 @@ const ShiftOverAnimation = () => {
 
             {/* Sparkassen-Logo Animation */}
             <div
-                className='absolute bottom-8 animate-fade-up'
+                className='absolute bottom-8 z-[70] animate-fade-up'
                 style={{ animationDelay: '1s' }}
+                onClick={(e) => e.stopPropagation()}
             >
                 <svg
                     className='w-12 h-12 text-white/40'

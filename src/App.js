@@ -9,8 +9,10 @@ import Slider from './components/Slider';
 import ProgressBar from './components/Progressbar';
 import ShiftOverAnimation from './components/ShiftOverAnimation';
 import WorkTimeTracker from './components/WorkTimeTracker';
+import AuthForm from './components/AuthForm';
 
 function App() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const getCurrentTime = () => {
         const now = new Date();
         return `${String(now.getHours()).padStart(2, '0')}:${String(
@@ -28,6 +30,16 @@ function App() {
     const [isShiftOver, setIsShiftOver] = useState(false);
     const [currentArbeitszeitId, setCurrentArbeitszeitId] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+    useEffect(() => {
+        // Prüfe beim Start, ob ein Token existiert
+        const token = localStorage.getItem('token');
+        setIsAuthenticated(!!token);
+    }, []);
+
+    const handleAuthSuccess = () => {
+        setIsAuthenticated(true);
+    };
 
     const validateTimeInput = (time) => {
         const [hours, minutes] = time.split(':').map(Number);
@@ -419,18 +431,31 @@ function App() {
                                     />
                                     <button
                                         onClick={handleSave}
-                                        className='w-full py-2 px-4 bg-sparkasse-red text-white rounded-lg hover:bg-sparkasse-darkred transition-colors duration-200 font-medium shadow-sm'
+                                        disabled={!isAuthenticated}
+                                        className={`w-full py-2 px-4 ${
+                                            !isAuthenticated
+                                                ? 'bg-sparkasse-gray/50 cursor-not-allowed'
+                                                : 'bg-sparkasse-red hover:bg-sparkasse-darkred'
+                                        } text-white rounded-lg transition-colors duration-200 font-medium shadow-sm`}
                                     >
-                                        Speichern & Berechnen
+                                        {isAuthenticated
+                                            ? 'Speichern & Berechnen'
+                                            : 'Bitte anmelden'}
                                     </button>
                                 </ComponentContainer>
                             </div>
 
-                            {/* Arbeitszeiterfassung */}
+                            {/* Arbeitszeiterfassung oder Auth Form */}
                             <div className='space-y-8'>
-                                <WorkTimeTracker
-                                    refreshTrigger={refreshTrigger}
-                                />
+                                {isAuthenticated ? (
+                                    <WorkTimeTracker
+                                        refreshTrigger={refreshTrigger}
+                                    />
+                                ) : (
+                                    <AuthForm
+                                        onAuthSuccess={handleAuthSuccess}
+                                    />
+                                )}
                             </div>
                         </div>
                     </main>

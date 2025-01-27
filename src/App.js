@@ -10,6 +10,7 @@ import ShiftOverAnimation from './components/ShiftOverAnimation';
 import WorkTimeTracker from './components/WorkTimeTracker';
 import AuthForm from './components/AuthForm';
 import ErrorBoundary from './components/ErrorBoundary';
+import ToastContainer from './components/ToastContainer';
 
 import apiService from './services/api';
 import {
@@ -163,6 +164,7 @@ function App() {
     return (
         <ErrorBoundary>
             <div className='min-h-screen bg-gray-50'>
+                <ToastContainer />
                 {isShiftOver ? (
                     <div
                         className='fixed inset-0 z-[50] bg-black/50 backdrop-blur-sm'

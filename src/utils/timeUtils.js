@@ -142,9 +142,17 @@ export const calculateRemainingTime = (endDate) => {
         const minutes = Math.floor((diff % 3600000) / 60000);
         const seconds = Math.floor((diff % 60000) / 1000);
 
+        // Berechne die Startzeit des aktuellen Arbeitstages
+        const startOfShift = new Date(endDate);
+        startOfShift.setHours(startOfShift.getHours() - 8); // Annahme: 8-Stunden-Arbeitstag
+
+        // Berechne den Fortschritt basierend auf der verstrichenen Zeit seit Arbeitsbeginn
+        const totalWorkDuration = endDate - startOfShift;
+        const elapsedDuration = now - startOfShift;
+
         const progress = Math.min(
             100,
-            ((now - endDate) / (endDate - now)) * 100
+            Math.max(0, (elapsedDuration / totalWorkDuration) * 100)
         );
 
         return {

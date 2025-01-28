@@ -3,7 +3,7 @@ import ErrorService from './errorService';
 
 const BASE_URL =
     process.env.REACT_APP_API_URL ||
-    'https://feierabendrechner-backend.onrender.com';
+    'https://feierabendrechner-backend.vercel.app';
 
 const api = axios.create({
     baseURL: BASE_URL,

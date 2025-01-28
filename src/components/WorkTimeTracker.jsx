@@ -89,7 +89,7 @@ const WorkTimeTracker = ({ refreshTrigger = 0 }) => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get(
-                'https://feierabendrechner-backend.onrender.com:10000/api/arbeitszeiten',
+                'hhttps://feierabendrechner-backend.vercel.app/api/arbeitszeiten',
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

@@ -3,22 +3,40 @@ import ErrorService from './errorService';
 
 const BASE_URL =
     process.env.REACT_APP_API_URL ||
-    'https://feierabendrechner-backend.onrender.com:10000';
+    'https://feierabendrechner-backend.onrender.com';
+
+const api = axios.create({
+    baseURL: BASE_URL,
+    timeout: 30000,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    retry: 3,
+    retryDelay: (retryCount) => {
+        return retryCount * 2000;
+    },
+});
 
 class ApiService {
     constructor() {
-        this.client = axios.create({
-            baseURL: BASE_URL,
-            timeout: 5000,
-        });
+        this.client = api;
+        this.retryCount = 0;
+        this.maxRetries = 3;
 
         this.client.interceptors.request.use(
             (config) => {
                 const token = localStorage.getItem('token');
-                if (!token) {
-                    throw new Error('No token found');
+                const isAuthEndpoint = config.url.includes('/auth/');
+
+                if (!token && !isAuthEndpoint) {
+                    throw new Error(
+                        'Nicht authentifiziert. Bitte melden Sie sich an.'
+                    );
                 }
-                config.headers.Authorization = `Bearer ${token}`;
+
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
                 return config;
             },
             (error) => {
@@ -32,7 +50,22 @@ class ApiService {
 
         this.client.interceptors.response.use(
             (response) => response,
-            (error) => {
+            async (error) => {
+                if (
+                    (error.code === 'ECONNABORTED' || !error.response) &&
+                    this.retryCount < this.maxRetries
+                ) {
+                    this.retryCount++;
+                    const delayTime = this.retryCount * 2000;
+
+                    await new Promise((resolve) =>
+                        setTimeout(resolve, delayTime)
+                    );
+                    return this.client(error.config);
+                }
+
+                this.retryCount = 0;
+
                 if (error.response?.status === 401) {
                     localStorage.removeItem('token');
                     ErrorService.showNotification(
@@ -50,15 +83,42 @@ class ApiService {
 
     async getArbeitszeiten() {
         try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error(
+                    'Nicht authentifiziert. Bitte melden Sie sich an.'
+                );
+            }
+
             const response = await this.client.get('/api/arbeitszeiten');
+
+            if (!response.data) {
+                throw new Error('Keine Daten vom Server erhalten');
+            }
+
             return response.data;
         } catch (error) {
-            const errorMessage = ErrorService.handleApiError(
-                error,
-                'Fehler beim Laden der Arbeitszeiten'
+            if (error.code === 'ECONNABORTED') {
+                throw new Error(
+                    'Der Server antwortet langsam. Ein erneuter Versuch wird unternommen...'
+                );
+            }
+            if (!navigator.onLine) {
+                throw new Error(
+                    'Keine Internetverbindung verfügbar. Bitte überprüfen Sie Ihre Verbindung.'
+                );
+            }
+            if (!error.response) {
+                throw new Error(
+                    'Verbindung zum Server konnte nicht hergestellt werden. Bitte versuchen Sie es später erneut.'
+                );
+            }
+            throw new Error(
+                'Fehler beim Laden der Arbeitszeiten: ' +
+                    (error.response?.data?.message ||
+                        error.message ||
+                        'Unbekannter Fehler')
             );
-            ErrorService.showNotification(errorMessage, 'error');
-            throw error;
         }
     }
 
@@ -126,6 +186,41 @@ class ApiService {
             console.error('Fehler beim Vergleich der Arbeitszeiten:', error);
             return false;
         }
+    }
+
+    async login(credentials) {
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/api/auth/login`,
+                credentials,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('username', credentials.username);
+                return response.data;
+            } else {
+                throw new Error('Keine Token in der Antwort gefunden');
+            }
+        } catch (error) {
+            if (error.response?.status === 401) {
+                throw new Error('Benutzername oder Passwort ist falsch');
+            }
+            throw new Error(
+                'Fehler beim Login: ' +
+                    (error.response?.data?.message || error.message)
+            );
+        }
+    }
+
+    async logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
     }
 }
 

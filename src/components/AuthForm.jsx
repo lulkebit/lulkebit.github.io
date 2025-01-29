@@ -34,9 +34,22 @@ const AuthForm = ({ onAuthSuccess }) => {
             setUsername('');
             setPassword('');
         } catch (error) {
-            setError(
-                error.response?.data?.message || 'Ein Fehler ist aufgetreten'
-            );
+            let errorMessage = 'Ein Fehler ist aufgetreten';
+            if (error.response?.status === 401) {
+                errorMessage = 'Benutzername oder Passwort ist falsch';
+            } else if (
+                !error.response ||
+                error.response?.status === 0 ||
+                error.response?.status >= 500
+            ) {
+                errorMessage =
+                    'Verbindungsfehler: Bitte prüfen Sie Ihre Internetverbindung und VPN-Einstellungen. Möglicherweise blockiert die Unternehmens-VPN den Zugriff.';
+            } else {
+                errorMessage =
+                    error.response?.data?.message ||
+                    'Ein unerwarteter Fehler ist aufgetreten';
+            }
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }

@@ -130,22 +130,25 @@ function App() {
             setEndTime(newEndTime);
             updateTimeAndProgress(endDate);
 
-            const today = new Date().toISOString().split('T')[0];
-            const arbeitszeit = {
-                datum: today,
-                startZeit: validStartTime,
-                endZeit: newEndTime,
-                pausenZeit: String(sliderValue),
-                gesamtZeit: calculateGesamtZeit(
-                    validStartTime,
-                    newEndTime,
-                    sliderValue
-                ),
-            };
+            // Nur speichern wenn authentifiziert
+            if (isAuthenticated) {
+                const today = new Date().toISOString().split('T')[0];
+                const arbeitszeit = {
+                    datum: today,
+                    startZeit: validStartTime,
+                    endZeit: newEndTime,
+                    pausenZeit: String(sliderValue),
+                    gesamtZeit: calculateGesamtZeit(
+                        validStartTime,
+                        newEndTime,
+                        sliderValue
+                    ),
+                };
 
-            const result = await apiService.saveArbeitszeit(arbeitszeit);
-            setCurrentArbeitszeitId(result._id);
-            setRefreshTrigger((prev) => prev + 1);
+                const result = await apiService.saveArbeitszeit(arbeitszeit);
+                setCurrentArbeitszeitId(result._id);
+                setRefreshTrigger((prev) => prev + 1);
+            }
         } catch (error) {
             console.error('Fehler beim Speichern:', error);
         }
@@ -155,6 +158,7 @@ function App() {
         workTime,
         sliderValue,
         updateTimeAndProgress,
+        isAuthenticated,
     ]);
 
     useEffect(() => {
@@ -225,17 +229,19 @@ function App() {
                                         />
                                         <button
                                             onClick={handleSave}
-                                            disabled={!isAuthenticated}
-                                            className={`w-full py-2 px-4 ${
-                                                !isAuthenticated
-                                                    ? 'bg-sparkasse-gray/50 cursor-not-allowed'
-                                                    : 'bg-sparkasse-red hover:bg-sparkasse-darkred'
-                                            } text-white rounded-lg transition-colors duration-200 font-medium shadow-sm`}
+                                            className={`w-full py-2 px-4 bg-sparkasse-red hover:bg-sparkasse-darkred text-white rounded-lg transition-colors duration-200 font-medium shadow-sm`}
                                         >
                                             {isAuthenticated
                                                 ? 'Speichern & Berechnen'
-                                                : 'Bitte anmelden'}
+                                                : 'Berechnen (ohne Speichern)'}
                                         </button>
+                                        {!isAuthenticated && (
+                                            <p className='text-sm text-sparkasse-gray/70 mt-2 text-center'>
+                                                Melden Sie sich an, um Ihre
+                                                Arbeitszeiten zu speichern und
+                                                zu verfolgen.
+                                            </p>
+                                        )}
                                     </ComponentContainer>
                                 </div>
 

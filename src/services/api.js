@@ -11,10 +11,7 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    retry: 3,
-    retryDelay: (retryCount) => {
-        return retryCount * 2000;
-    },
+    withCredentials: false,
 });
 
 class ApiService {
